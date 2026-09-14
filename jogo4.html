@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do Alimento ao Prato</title>
+    <link rel="stylesheet" href="jogo4C.css">
+
+    <link rel="shortcut icon" href="icon-do-alimento-ao-prato.ico" type="image/x-icon">
+</head>
+
+<body>
+    <div id="game">
+        <canvas id="canvas" width="960" height="600"></canvas>
+
+        <div id="hud">
+            <div class="topbar">
+                <div class="brand">🌱 DO ALIMENTO AO PRATO</div>
+                <div id="phaseName">FAZENDA</div>
+                <div id="stats"></div>
+            </div>
+            <div class="mission">
+                <b>OBJETIVO</b>
+                <div id="objectives"></div>
+            </div>
+            <div id="interaction"></div>
+            <div id="message"></div>
+        </div>
+
+        <div id="startScreen" class="screen">
+            <div class="panel">
+                <div class="big-icon">🌱</div>
+                <h1>Do Alimento ao Prato</h1>
+                <p>Descubra quantas pessoas, recursos e etapas são necessários para um alimento chegar até a nossa mesa.
+                </p>
+                <button id="startBtn">COMEÇAR JOGO</button>
+                <small>WASD / SETAS = andar &nbsp; • &nbsp; E = interagir &nbsp; • &nbsp; ESC = pausar</small>
+            </div>
+        </div>
+
+        <div id="pauseScreen" class="screen hidden">
+            <div class="panel">
+                <h2>PAUSADO</h2>
+                <button id="resumeBtn">CONTINUAR</button>
+                <button id="restartBtn" class="secondary">REINICIAR FASE</button>
+            </div>
+        </div>
+
+        <div id="finishScreen" class="screen hidden">
+            <div class="panel">
+                <div class="big-icon">🍽️</div>
+                <h1>Alimento chegou ao prato!</h1>
+                <div id="finalStats"></div>
+                <p class="finalText">Do alimento ao prato existe uma grande jornada. Quando desperdiçamos comida, também
+                    desperdiçamos parte do trabalho, do tempo e dos recursos usados para produzi-la.</p>
+                <button id="againBtn">JOGAR NOVAMENTE</button>
+            </div>
+        </div>
+    </div>
+    <script src="jogo4J.js"></script>
+</body>
+
+</html>

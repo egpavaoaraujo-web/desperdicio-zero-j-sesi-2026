@@ -1,0 +1,1015 @@
+/* =====================================================
+   COZINHA DO BOLO — style.css
+   Tema casual de confeitaria, pastel e amigável.
+   100% RESPONSIVO — mobile-first com breakpoints.
+   ===================================================== */
+
+:root {
+    --bg1: #ffd1e8;
+    --bg2: #ffe3f0;
+    --panel: #fff7fb;
+    --pink: #ff7ab8;
+    --pink-dark: #e45a9e;
+    --purple: #a66bdd;
+    --blue: #7ec3f0;
+    --green: #7ecb6a;
+    --red: #f05a5a;
+    --dark: #6b3a5a;
+    --shadow: 0 8px 24px rgba(150, 60, 110, 0.20);
+    --radius: 18px;
+    /* Tipografia fluida */
+    --f-title: clamp(1.9rem, 6vw, 3rem);
+    --f-sub: clamp(1rem, 3vw, 1.15rem);
+    --f-h2: clamp(1.4rem, 4vw, 1.8rem);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* IMPORTANTE: permite que qualquer elemento filho de grid/flex
+   encolha abaixo do tamanho do conteúdo. Sem isto, itens não
+   quebram linha e estouram a largura da tela (causando cortes). */
+*,
+*::before,
+*::after {
+    min-width: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: "Segoe UI", "Trebuchet MS", "Comic Sans MS", system-ui, sans-serif;
+    background: linear-gradient(160deg, var(--bg1), var(--bg2));
+    background-attachment: fixed;
+    color: var(--dark);
+    min-height: 100vh;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+body.no-anim * {
+    animation: none !important;
+    transition: none !important;
+}
+
+img,
+svg {
+    max-width: 100%;
+}
+
+/* ============ Telas ============ */
+.screen {
+    display: none;
+    min-height: 100svh;
+    padding: 16px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.screen.active {
+    display: flex;
+}
+
+.screen:not(#screen-game).active {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+}
+
+.panel {
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: clamp(20px, 4vw, 28px);
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    animation: pop 0.35s ease;
+}
+
+.panel.center {
+    max-width: 640px;
+}
+
+.panel h2 {
+    margin-bottom: 18px;
+    color: var(--pink-dark);
+    font-size: var(--f-h2);
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ============ Menu ============ */
+.menu-card {
+    background: var(--panel);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: clamp(28px, 6vw, 40px) clamp(20px, 5vw, 34px);
+    text-align: center;
+    max-width: 480px;
+    width: 100%;
+    animation: pop 0.4s ease;
+}
+
+.game-title {
+    font-size: var(--f-title);
+    color: var(--pink-dark);
+    letter-spacing: 1px;
+    text-shadow: 0 3px 0 #fff;
+    line-height: 1.1;
+}
+
+.game-subtitle {
+    font-size: var(--f-sub);
+    color: var(--purple);
+    margin: 8px 0 24px;
+    font-style: italic;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.menu-deco {
+    margin-top: 22px;
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    letter-spacing: clamp(4px, 1.5vw, 8px);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+/* ============ Botões ============ */
+.btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding: 14px 20px;
+    border-radius: 14px;
+    color: var(--dark);
+    background: #ffe0ee;
+    box-shadow: 0 4px 0 #e3a8c8;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #e3a8c8;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: #fff;
+    box-shadow: 0 4px 0 #a24a86;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--red), #c94444);
+    color: #fff;
+    box-shadow: 0 4px 0 #9b3030;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--purple);
+    box-shadow: none;
+    border: 2px solid var(--purple);
+}
+
+.btn-ghost:hover {
+    background: #f4e9ff;
+}
+
+.btn-small {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    background: #ffd6ea;
+    box-shadow: 0 3px 0 #e3a8c8;
+}
+
+.btn-finish {
+    width: 100%;
+    margin-top: 16px;
+    font-size: clamp(1.1rem, 4vw, 1.3rem);
+    padding: clamp(14px, 3vw, 16px);
+    background: linear-gradient(135deg, #7ecb6a, #3fae6d);
+    color: #fff;
+    box-shadow: 0 5px 0 #2b7d50;
+}
+
+/* ============ Fases ============ */
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: clamp(10px, 2vw, 14px);
+    margin: 20px 0;
+    width: 100%;
+}
+
+.level-card {
+    background: linear-gradient(160deg, #ffe0ee, #f4e9ff);
+    border-radius: 16px;
+    padding: clamp(12px, 3vw, 16px);
+    cursor: pointer;
+    box-shadow: 0 4px 0 #dfb3cf;
+    transition: transform 0.1s ease;
+}
+
+.level-card:hover:not(.locked) {
+    transform: translateY(-3px);
+}
+
+.level-card .num {
+    font-size: 1.6rem;
+}
+
+.level-card .lname {
+    font-weight: 700;
+    margin: 6px 0;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+}
+
+.level-card .desc {
+    font-size: 0.8rem;
+    opacity: 0.85;
+}
+
+.level-card .stars {
+    color: #ffc93c;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    letter-spacing: 2px;
+}
+
+.level-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+}
+
+.level-card.locked::after {
+    content: " 🔒";
+}
+
+/* ============ Como jogar ============ */
+.howto-list {
+    text-align: left;
+    margin: 0 auto 18px;
+    max-width: 460px;
+    line-height: 2;
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    padding-left: 4px;
+}
+
+.howto-warning {
+    background: #fff0d0;
+    border: 2px solid #f0c860;
+    border-radius: 14px;
+    padding: 14px;
+    margin: 10px auto 20px;
+    max-width: 460px;
+    line-height: 1.6;
+    color: #8a6a1a;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+/* ============ Configurações ============ */
+.settings-panel {
+    text-align: left;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 14px 0;
+    padding: 8px 4px;
+    font-weight: 700;
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+}
+
+.setting-row input[type="range"] {
+    flex: 1;
+    max-width: 220px;
+    min-width: 80px;
+    accent-color: var(--pink);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #d9c2d2;
+    border-radius: 30px;
+    transition: 0.2s;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    top: 4px;
+    background: #fff;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.switch input:checked+.slider {
+    background: var(--pink);
+}
+
+.switch input:checked+.slider::before {
+    transform: translateX(24px);
+}
+
+/* ============ HUD ============ */
+.hud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 1.5vw, 10px);
+    background: rgba(255, 247, 251, 0.92);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: clamp(8px, 2vw, 10px) clamp(10px, 2vw, 16px);
+    margin-bottom: clamp(10px, 2vw, 16px);
+    position: sticky;
+    top: 8px;
+    z-index: 20;
+    width: 100%;
+    max-width: 100%;
+}
+
+.hud-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 6px 10px;
+    text-align: center;
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: 100%;
+}
+
+.hud-label {
+    display: block;
+    font-size: clamp(0.6rem, 1.6vw, 0.7rem);
+    letter-spacing: 1px;
+    color: var(--purple);
+    font-weight: 800;
+}
+
+.hud-value {
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    font-weight: 800;
+    color: var(--dark);
+    white-space: nowrap;
+}
+
+#hud-discard.zero {
+    color: var(--red);
+}
+
+#hud-timer.low {
+    color: var(--red);
+}
+
+.combo-wrap {
+    background: linear-gradient(135deg, #fff3c0, #ffd28a);
+}
+
+#hud-combo {
+    color: #d2691e;
+}
+
+/* ============ Dica educativa ============ */
+.game-tip {
+    background: #fff0d0;
+    color: #8a6a1a;
+    border-radius: 12px;
+    padding: 8px 16px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+    border: 2px dashed #f0c860;
+    animation: fadeTip 5s ease forwards;
+}
+
+@keyframes fadeTip {
+
+    0%,
+    75% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* ============ Jogo main ============ */
+.game-main {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: clamp(12px, 2vw, 18px);
+    align-items: start;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.game-main>* {
+    min-width: 0;
+}
+
+#screen-game.active {
+    flex-direction: column;
+}
+
+.order-panel,
+.build-panel {
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: clamp(14px, 2.5vw, 18px);
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Pedido */
+.customer {
+    font-size: clamp(2.4rem, 8vw, 3.2rem);
+    text-align: center;
+    animation: bounceIn 0.5s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+    }
+
+    70% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.order-box {
+    border: 3px solid var(--pink);
+    border-radius: 16px;
+    padding: clamp(10px, 2vw, 14px);
+    margin-top: 10px;
+    background: #fff;
+}
+
+.order-box h3 {
+    text-align: center;
+    color: var(--pink-dark);
+    margin-bottom: 10px;
+    font-size: clamp(1rem, 3vw, 1.2rem);
+}
+
+.order-list {
+    list-style: none;
+}
+
+.order-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px;
+    border-bottom: 1px dashed #f0cfe2;
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+    flex-wrap: wrap;
+}
+
+.order-list li:last-child {
+    border-bottom: none;
+}
+
+.order-emoji {
+    font-size: clamp(1.1rem, 3vw, 1.3rem);
+    flex-shrink: 0;
+}
+
+.order-label {
+    color: var(--purple);
+    font-weight: 700;
+    width: auto;
+    min-width: 96px;
+}
+
+.order-value {
+    font-weight: 800;
+    color: var(--dark);
+    margin-left: auto;
+    text-align: right;
+}
+
+.queue-box {
+    margin-top: 14px;
+}
+
+.queue-box h4 {
+    color: var(--purple);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.queue-item {
+    font-size: clamp(0.75rem, 2vw, 0.8rem);
+    background: #f4e9ff;
+    border-radius: 8px;
+    padding: 5px 8px;
+    color: var(--purple);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============ Bolo ============ */
+.cake-stage {
+    background: linear-gradient(160deg, #ffe9f3, #f4e9ff);
+    border-radius: 16px;
+    min-height: clamp(200px, 30vh, 280px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: clamp(14px, 3vw, 20px);
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+.cake-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+}
+
+.cake-tier {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: clamp(110px, 45vw, 200px);
+    max-width: 100%;
+    margin-bottom: -6px;
+    animation: drop 0.3s ease;
+}
+
+@keyframes drop {
+    0% {
+        transform: translateY(-24px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.tier-covering {
+    width: 100%;
+    height: clamp(18px, 4vw, 26px);
+    border-radius: 12px 12px 0 0;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.tier-filling {
+    width: 100%;
+    height: clamp(14px, 3vw, 20px);
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.tier-batter {
+    width: 100%;
+    height: clamp(28px, 6vw, 40px);
+    border-radius: 0 0 10px 10px;
+    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+
+.cake-decoration {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    letter-spacing: clamp(3px, 1vw, 6px);
+    margin-top: -12px;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cake-placeholder {
+    color: #d9a7c4;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    padding: 20px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* ============ Montagem / etapas ============ */
+.step-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0 10px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.step-tab {
+    border: 2px solid #e3a8c8;
+    background: #fff;
+    color: var(--dark);
+    border-radius: 12px;
+    padding: clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    transition: 0.12s;
+    touch-action: manipulation;
+}
+
+.step-tab.active {
+    background: var(--pink);
+    color: #fff;
+    border-color: var(--pink-dark);
+}
+
+.step-content {
+    min-height: 118px;
+}
+
+.step-hint {
+    color: var(--purple);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.option-btn {
+    border: 2px solid #e3a8c8;
+    background: #fff;
+    border-radius: 12px;
+    padding: clamp(10px, 2vw, 12px) 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    color: var(--dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: 0.12s;
+    touch-action: manipulation;
+    min-height: 64px;
+}
+
+.option-btn .o-emoji {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+}
+
+.option-btn .o-name {
+    font-size: clamp(0.72rem, 2vw, 0.8rem);
+    text-align: center;
+}
+
+.option-btn:hover {
+    transform: translateY(-2px);
+}
+
+.option-btn.selected {
+    background: var(--pink);
+    color: #fff;
+    border-color: var(--pink-dark);
+    box-shadow: 0 0 0 3px rgba(255, 122, 184, 0.3);
+}
+
+.option-btn.layers-btn {
+    padding: 14px 6px;
+    font-size: 1rem;
+}
+
+/* ============ Modal ============ */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(70, 30, 60, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 16px;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-card {
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: clamp(20px, 4vw, 26px);
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    animation: pop 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-card h3 {
+    color: var(--red);
+    font-size: clamp(1.3rem, 4vw, 1.6rem);
+    margin-bottom: 12px;
+}
+
+.modal-card p {
+    margin: 8px 0;
+    line-height: 1.5;
+    font-size: clamp(0.95rem, 2.5vw, 1rem);
+}
+
+.discard-count {
+    background: #fff0d0;
+    border-radius: 10px;
+    padding: 8px;
+    color: #8a6a1a;
+    font-weight: 700;
+}
+
+.modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.modal-actions .btn {
+    flex: 1 1 150px;
+}
+
+/* ============ Vitória / Derrota ============ */
+.win-title {
+    color: var(--green);
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+}
+
+.lose-title {
+    color: var(--red);
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+}
+
+.lose-sub {
+    margin: 6px 0;
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+}
+
+.stars-big {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    letter-spacing: clamp(4px, 1.5vw, 8px);
+    color: #ffc93c;
+    margin: 10px 0;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.stats {
+    text-align: left;
+    max-width: 380px;
+    margin: 16px auto;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 12px;
+    background: #fff;
+    border-radius: 10px;
+    margin: 5px 0;
+    font-weight: 700;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+.stats-row .s-val {
+    color: var(--pink-dark);
+    white-space: nowrap;
+}
+
+.toast {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 3px solid var(--green);
+    border-radius: 14px;
+    padding: clamp(10px, 3vw, 12px) clamp(16px, 4vw, 20px);
+    font-weight: 800;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    z-index: 60;
+    box-shadow: var(--shadow);
+    width: auto;
+    min-width: 0;
+    max-width: calc(100vw - 24px);
+    text-align: center;
+    overflow-wrap: break-word;
+    animation: toastIn 0.4s ease, toastOut 0.5s ease 3s forwards;
+}
+
+.toast.error {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.toast.waste {
+    border-color: #f0c860;
+    color: #8a6a1a;
+}
+
+@keyframes toastIn {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes toastOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+}
+
+/* =====================================================
+   BREAKPOINTS RESPONSIVOS
+   ===================================================== */
+
+/* Tablets / notebooks pequenos — empilha pedido e montagem */
+@media (max-width: 900px) {
+    .game-main {
+        grid-template-columns: 1fr;
+    }
+
+    .order-panel {
+        order: 2;
+    }
+
+    .build-panel {
+        order: 1;
+    }
+
+    /* Pedido vira linha enxuta no mobile */
+    .order-panel .order-box {
+        margin-top: 8px;
+    }
+}
+
+/* Celulares pequenos */
+@media (max-width: 480px) {
+    .screen {
+        padding: 10px;
+    }
+
+    .hud {
+        gap: 6px;
+    }
+
+    .hud-item {
+        min-width: 0;
+        flex: 1 1 30%;
+    }
+
+    /* Abas quebram linha no mobile para nenhuma ficar cortada */
+    .step-tabs {
+        flex-wrap: wrap;
+    }
+
+    .step-tab {
+        flex: 1 1 auto;
+        white-space: nowrap;
+    }
+
+    .option-grid {
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    }
+
+    .modal-actions .btn {
+        flex: 1 1 100%;
+    }
+
+    .game-title {
+        letter-spacing: 0.5px;
+    }
+
+    .queue-item {
+        max-width: 100%;
+    }
+}
+
+/* Celulares muito pequenos / paisagem */
+@media (max-width: 360px) {
+    .option-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .order-label {
+        min-width: 84px;
+    }
+
+    .panel {
+        padding: 16px;
+    }
+}
+
+/* Telas muito grandes */
+@media (min-width: 1400px) {
+    .game-main {
+        max-width: 1400px;
+    }
+
+    .cake-tier {
+        width: 220px;
+    }
+
+    .cake-stage {
+        min-height: 300px;
+    }
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uma Escolha, Um Futuro</title>
+    <meta name="description"
+        content="Uma história interativa sobre as pequenas escolhas que envolvem a comida e o desperdício.">
+    <link rel="shortcut icon" href="image-Photoroom-_1_.ico" type="image/x-icon">
+    <link rel="stylesheet" href="jogo3C.css">
+</head>
+
+<body>
+
+    <!-- Decoração de fundo -->
+    <div class="bg-decor" aria-hidden="true">
+        <span class="blob blob-1"></span>
+        <span class="blob blob-2"></span>
+        <span class="blob blob-3"></span>
+        <span class="leaf leaf-1">🍃</span>
+        <span class="leaf leaf-2">🌿</span>
+    </div>
+
+    <div id="app">
+
+        <!-- ===== MENU PRINCIPAL ===== -->
+        <section id="screen-menu" class="screen active">
+            <div class="menu-inner">
+                <div class="menu-badge" aria-hidden="true">🌱</div>
+                <h1 class="title">Uma Escolha,<br><span class="title-accent">Um Futuro</span></h1>
+                <p class="subtitle">Suas escolhas também alimentam o futuro.</p>
+
+                <div class="menu-buttons">
+                    <button class="btn btn-primary" id="btn-start" type="button">▶ COMEÇAR HISTÓRIA</button>
+                    <button class="btn btn-secondary" id="btn-howto" type="button">COMO JOGAR</button>
+                    <button class="btn btn-secondary" id="btn-endings" type="button">FINAIS DESCOBERTOS</button>
+                </div>
+
+                <p class="footer-note">Uma história interativa sobre o desperdício de alimentos</p>
+            </div>
+        </section>
+
+        <!-- ===== COMO JOGAR ===== -->
+        <section id="screen-howto" class="screen">
+            <div class="panel">
+                <button class="btn btn-back" id="btn-howto-back" type="button">← VOLTAR</button>
+                <h2 class="panel-title">Como Jogar</h2>
+                <ul class="howto-list">
+                    <li>🧭 Você acompanhará a história de <strong>Lia</strong>.</li>
+                    <li>💬 Em determinados momentos, será necessário escolher o que ela fará.</li>
+                    <li>🔄 Suas escolhas alteram a história.</li>
+                    <li>🌱 Algumas decisões podem ajudar a evitar o desperdício de alimentos.</li>
+                    <li>🏁 Existem vários finais.</li>
+                    <li>🔁 Jogue novamente para descobrir outros caminhos.</li>
+                </ul>
+                <div class="tip">⚠️ Decisões marcadas como <strong>IMPORTANTES</strong> podem mudar o rumo da história.
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FINAIS DESCOBERTOS ===== -->
+        <section id="screen-endings" class="screen">
+            <div class="panel">
+                <button class="btn btn-back" id="btn-endings-back" type="button">← VOLTAR</button>
+                <h2 class="panel-title">Finais Descobertos</h2>
+                <p class="panel-sub" id="endings-count"></p>
+                <div class="endings-list" id="endings-list"></div>
+            </div>
+        </section>
+
+        <!-- ===== JOGO ===== -->
+        <section id="screen-game" class="screen">
+            <header class="game-header">
+                <div class="chapter-label" id="chapter-label">CAPÍTULO 1 / 8</div>
+                <div class="progress" role="progressbar" aria-label="progresso da história">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="hud" id="hud" title="Nível de consciência"><span class="hud-leaf">🍃</span><span
+                        id="hud-value">40%</span></div>
+            </header>
+
+            <div class="scene-stage" id="scene-stage">
+                <div class="character-area" id="character-area">
+                    <div class="avatar-ring" id="avatar-ring">
+                        <span class="avatar-emoji" id="avatar-emoji">👩🏻</span>
+                    </div>
+                    <div class="character-name" id="character-name">Lia</div>
+                </div>
+
+                <div class="dialogue-card" id="dialogue-card">
+                    <div class="decision-badge hidden" id="decision-badge">⚠️ DECISÃO IMPORTANTE</div>
+                    <div class="dialogue-text" id="dialogue-text"></div>
+                </div>
+
+                <div class="choices" id="choices"></div>
+            </div>
+
+            <button class="btn btn-link" id="btn-restart" type="button">↺ RECOMEÇAR HISTÓRIA</button>
+        </section>
+
+        <!-- ===== TELA DE FINAL ===== -->
+        <section id="screen-ending" class="screen">
+            <div class="ending-card" id="ending-card">
+                <div class="ending-badge">FINAL DA HISTÓRIA</div>
+                <div class="ending-icon" id="ending-icon">🌱</div>
+                <h2 class="ending-title" id="ending-title">FUTURO CONSCIENTE</h2>
+                <p class="ending-message" id="ending-message"></p>
+
+                <div class="ending-meta" id="ending-meta"></div>
+
+                <div class="stats-grid" id="stats-grid"></div>Z
+                <div class="meters" id="meters"></div>
+
+                <div class="quote">"Pequenas escolhas podem gerar grandes mudanças."</div>
+
+                <div class="ending-buttons">
+                    <button class="btn btn-primary" id="btn-again" type="button">🔁 JOGAR NOVAMENTE</button>
+                    <button class="btn btn-secondary" id="btn-menu" type="button">VOLTAR AO MENU</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="jogo3J.js"></script>
+</body>
+
+</html>

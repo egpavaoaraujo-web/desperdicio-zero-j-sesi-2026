@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>LIXO NINJA 🍎🗑️</title>
+    <link rel="stylesheet" href="jogo6C.css">
+
+    <link rel="shortcut icon" href="lixo-ninja-fruta.ico" type="image/x-icon">
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div id="hud" class="hidden">
+        <div class="hud-block">
+            <div id="score">0</div>
+            <div id="high">🏆 Recorde: 0</div>
+            <div id="modeTag"></div>
+        </div>
+        <div class="hud-block hud-right">
+            <div id="lives">❤️❤️❤️❤️</div>
+            <div id="hint"></div>
+        </div>
+    </div>
+
+    <!-- MENU -->
+    <div id="menu" class="overlay">
+        <div class="overlay-content">
+            <div class="title">🍎 LIXO NINJA</div>
+            <div class="subtitle">Corte a comida do jeito certo e ganhe pontos! 💪</div>
+            <button class="btn btn-classic" onclick="startGame('classic')">🗑️ MODO CLÁSSICO</button>
+            <button class="btn btn-rotten" onclick="startGame('rotten')">🧟 MODO ESTRAGADO</button>
+            <div class="rules">
+                <b>Modo Clássico:</b><br>
+                ✅ Corte as <span class="good">comidas boas</span> para ganhar pontos.<br>
+                🗑️ Deixe as <span class="bad">comidas estragadas</span> caírem na <b>lixeira</b> (+bônus).<br>
+                ⚠️ Não corte comida podre e não desperdice comida boa na lixeira (perde ❤️).<br>
+                👹 O monstrinho grita: <i>"Jogue a comida fora!"</i>
+                <hr>
+                <b>Modo Estragado:</b><br>
+                ✅ Corte as <span class="bad">comidas estragadas</span> para descartá-las.<br>
+                😋 Deixe as <span class="good">comidas boas</span> caírem para a pessoa comer (+5).<br>
+                ⚠️ Não deixe a pessoa comer comida <span class="bad">podre</span> e não corte comida boa (perde ❤️).<br>
+                👹 O monstrinho grita: <i>"Me dê comida estragada!"</i>
+            </div>
+            <div class="subtitle small">Você tem 4 vidas. Boa sorte! 🍀</div>
+        </div>
+    </div>
+
+    <!-- TUTORIAL -->
+    <div id="tutorial" class="overlay hidden">
+        <div class="overlay-content">
+            <div class="title" id="tutTitle">MODO CLÁSSICO</div>
+            <div class="rules" id="tutText"></div>
+            <button class="btn btn-classic" onclick="beginRound()">▶ COMEÇAR!</button>
+        </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="gameover" class="overlay hidden">
+        <div class="overlay-content">
+            <div class="big">💀 FIM DE JOGO</div>
+            <div class="final-score" id="finalScore">Pontuação: 0</div>
+            <div id="newRecord"></div>
+            <button class="btn btn-classic restart" onclick="restartSame()">🔁 Jogar de novo</button>
+            <button class="btn menu" onclick="goMenu()">🏠 Menu</button>
+        </div>
+    </div>
+
+    <script src="jogo6J.js"></script>
+</body>
+
+</html>

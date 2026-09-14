@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <title>Pega Frutas — Zero Desperdício</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="jogo1C.css">
+
+    <link rel="shortcut icon" href="image.ico" type="image/x-icon">
+</head>
+
+<body>
+    <div id="app">
+
+        <div id="hud">
+            <div id="scoreWrap"><span class="label">Pontos</span> <span id="scoreVal">0</span></div>
+            <div id="phasePill">Fase 1/6</div>
+            <div id="hearts">❤️❤️❤️</div>
+        </div>
+        <div id="phaseBarWrap">
+            <div id="phaseBarTrack">
+                <div id="phaseBarFill"></div>
+            </div>
+        </div>
+
+        <div id="stage">
+            <div id="basket"><span class="basketIcon">🧺</span></div>
+        </div>
+
+        <div id="startOverlay" class="overlay">
+            <h1>🧺 Pega Frutas!</h1>
+            <p class="sub">As frutas caem em qualquer lugar da tela. Mova a cesta com o teclado e encoste nelas para
+                <b>salvar automaticamente</b> — não deixe nenhuma cair no chão! O jogo tem <b>6 fases</b>, e cada uma é
+                mais rápida que a anterior.</p>
+            <div class="keysRow"><span class="keyCap">⬅️</span> 🧺 <span class="keyCap">➡️</span></div>
+            <button class="bigBtn" id="startBtn">Jogar</button>
+        </div>
+
+        <div id="overOverlay" class="overlay hidden">
+            <h1>Fim de jogo</h1>
+            <div class="finalScore" id="finalScoreVal">0</div>
+            <p class="sub" id="overMsg">Boa! Continue evitando desperdício.</p>
+            <button class="bigBtn" id="retryBtn">Jogar de novo</button>
+        </div>
+
+    </div>
+    <script src="jogo1J.js"></script>
+
+</body>
+
+</html>

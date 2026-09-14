@@ -1,0 +1,1031 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
+
+
+body {
+    font-family: Poppins, Arial, sans-serif;
+    color: #075c49;
+    background: #f8fff9;
+}
+
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+button {
+    font: inherit;
+    cursor: pointer;
+    border: 0;
+}
+
+
+.container {
+    width: min(1180px, 92%);
+    margin: auto;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: white;
+    box-shadow: 0 3px 15px #075c4915;
+}
+
+
+.nav {
+    min-height: 88px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+}
+
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-family: "Baloo 2";
+    font-weight: 800;
+    line-height: .78;
+    font-size: 31px;
+
+    color: #08784e;
+}
+
+
+.logo .leaf {
+    font-size: 53px;
+    transform: rotate(-18deg);
+}
+
+
+.logo b {
+    color: #1ca94f;
+}
+
+
+/* =========================
+   MENU
+========================= */
+
+.menu {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    font-weight: 600;
+}
+
+
+.menu a {
+    padding: 28px 0;
+    position: relative;
+
+    transition: .2s;
+}
+
+
+.menu a:hover,
+.menu a.active {
+    color: #168f4d;
+}
+
+
+.menu a.active::after {
+    content: "";
+
+    height: 4px;
+
+    border-radius: 5px;
+
+    background: #20ad52;
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    bottom: 13px;
+}
+
+
+.badge {
+    background: #e5faf4;
+    border-radius: 30px;
+
+    padding: 10px 18px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.earth-small {
+    font-size: 28px;
+}
+
+
+.menu-btn {
+    display: none;
+
+    background: #eaf9f1;
+
+    padding: 10px 13px;
+
+    border-radius: 12px;
+
+    font-size: 22px;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    background:
+        linear-gradient(180deg,
+            #77e0fa 0%,
+            #c8f7ef 100%);
+
+    overflow: hidden;
+}
+
+
+.hero-inner {
+    min-height: 390px;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1.05fr;
+
+    align-items: center;
+
+    position: relative;
+}
+
+
+.hero-copy {
+    z-index: 2;
+    padding: 38px 0;
+}
+
+
+.hero h1 {
+    font-family: "Baloo 2";
+
+    font-size: 58px;
+
+    line-height: .95;
+
+    color: #075c49;
+}
+
+
+.hero h1 span {
+    color: #159d49;
+}
+
+
+.hero h2 {
+    font-family: "Baloo 2";
+
+    font-size: 27px;
+
+    margin: 15px 0 8px;
+}
+
+
+.hero p {
+    font-size: 18px;
+
+    max-width: 510px;
+
+    line-height: 1.55;
+}
+
+
+.cta {
+    display: inline-block;
+
+    margin-top: 22px;
+
+    background: #159e4d;
+
+    color: white;
+
+    border-radius: 30px;
+
+    padding: 14px 28px;
+
+    font-weight: 800;
+
+    font-size: 17px;
+
+    box-shadow: 0 7px 0 #08763d;
+
+    transition: .2s;
+}
+
+
+.cta:hover {
+    transform: translateY(2px);
+
+    box-shadow: 0 5px 0 #08763d;
+}
+
+
+/* =========================
+   HERO ILUSTRAÇÃO
+========================= */
+
+.hero-art {
+    height: 390px;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+}
+
+
+.sun {
+    position: absolute;
+
+    right: 12%;
+    top: 25px;
+
+    font-size: 75px;
+}
+
+
+.cloud {
+    position: absolute;
+
+    font-size: 60px;
+
+    color: white;
+
+    opacity: .85;
+}
+
+
+.cloud.c1 {
+    left: 5%;
+    top: 20px;
+}
+
+
+.cloud.c2 {
+    right: 25%;
+    top: 65px;
+
+    font-size: 45px;
+}
+
+
+.tree {
+    position: absolute;
+
+    bottom: 0;
+
+    font-size: 125px;
+}
+
+
+.tree.t1 {
+    right: -15px;
+}
+
+
+.tree.t2 {
+    left: -20px;
+
+    font-size: 90px;
+}
+
+
+.kid {
+    font-size: 180px;
+
+    z-index: 2;
+
+    position: absolute;
+
+    bottom: -10px;
+
+    left: 8%;
+}
+
+
+.earth {
+    font-size: 175px;
+
+    z-index: 3;
+
+    position: absolute;
+
+    bottom: 0;
+
+    left: 39%;
+
+    filter: drop-shadow(0 10px 5px #075c4930);
+}
+
+
+.sign {
+    position: absolute;
+
+    right: 6%;
+
+    top: 115px;
+
+    background: #fff4cf;
+
+    border: 5px solid #d99d36;
+
+    border-radius: 14px;
+
+    padding: 12px 20px;
+
+    transform: rotate(-4deg);
+
+    font-family: "Baloo 2";
+
+    font-weight: 800;
+
+    font-size: 23px;
+
+    color: #15844a;
+
+    box-shadow: 0 8px 0 #b97b25;
+
+    z-index: 4;
+}
+
+
+/* =========================
+   ANÚNCIO DOS JOGOS
+========================= */
+
+.games-announcement {
+    background: #fff7d8;
+    padding: 28px 0;
+}
+
+
+.games-banner {
+    background:
+        linear-gradient(135deg,
+            #d8f8df,
+            #bfeeff);
+
+    border-radius: 28px;
+
+    padding: 25px 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 25px;
+
+    box-shadow:
+        0 8px 25px #075c4918;
+
+    border: 3px solid white;
+}
+
+
+.games-banner-icon {
+    width: 85px;
+    height: 85px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    display: grid;
+    place-items: center;
+
+    font-size: 48px;
+
+    flex-shrink: 0;
+}
+
+
+.games-banner-text {
+    flex: 1;
+}
+
+
+.games-label {
+    font-size: 14px;
+
+    font-weight: 800;
+
+    color: #159e4d;
+}
+
+
+.games-banner h2 {
+    font-family: "Baloo 2";
+
+    font-size: 32px;
+
+    line-height: 1.1;
+
+    margin: 3px 0 5px;
+
+    color: #075c49;
+}
+
+
+.games-banner p {
+    font-size: 15px;
+
+    line-height: 1.5;
+}
+
+
+.games-button {
+    background: #159e4d;
+
+    color: white;
+
+    padding: 15px 23px;
+
+    border-radius: 30px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    box-shadow: 0 6px 0 #08763d;
+
+    transition: .2s;
+}
+
+
+.games-button:hover {
+    transform: translateY(2px);
+
+    box-shadow: 0 4px 0 #08763d;
+}
+
+
+/* =========================
+   PRINCÍPIOS
+========================= */
+
+.principles {
+    background: #effcf4;
+
+    padding: 25px 0 30px;
+}
+
+
+.principle-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 12px;
+}
+
+
+.principle {
+    text-align: center;
+
+    padding: 8px 20px;
+
+    border-right: 1px solid #bfe8d2;
+}
+
+
+.principle:last-child {
+    border: 0;
+}
+
+
+.icon {
+    width: 82px;
+    height: 82px;
+
+    margin: auto;
+
+    border-radius: 50%;
+
+    display: grid;
+
+    place-items: center;
+
+    font-size: 40px;
+}
+
+
+.green {
+    background: #d8f4c9;
+}
+
+
+.blue {
+    background: #cbeaff;
+}
+
+
+.yellow {
+    background: #fff0b9;
+}
+
+
+.pink {
+    background: #ffd6dd;
+}
+
+
+.principle h3 {
+    font-family: "Baloo 2";
+
+    font-size: 25px;
+
+    margin-top: 5px;
+}
+
+
+.principle p {
+    font-size: 14px;
+
+    line-height: 1.35;
+}
+
+
+/* =========================
+   SEÇÕES
+========================= */
+
+section {
+    padding: 55px 0;
+}
+
+
+.section-title {
+    text-align: center;
+
+    font-family: "Baloo 2";
+
+    font-size: 42px;
+
+    color: #075c49;
+
+    margin-bottom: 10px;
+}
+
+
+.section-sub {
+    text-align: center;
+
+    max-width: 700px;
+
+    margin: 0 auto 30px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================
+   DICAS
+========================= */
+
+#dicas {
+    background: #f8fff9;
+}
+
+
+.tips-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+
+.tip {
+    background: white;
+
+    border-radius: 22px;
+
+    padding: 24px;
+
+    box-shadow:
+        0 6px 20px #075c4912;
+
+    border: 2px solid #e4f5ea;
+
+    transition: .2s;
+}
+
+
+.tip:hover {
+    transform: translateY(-5px);
+}
+
+
+.tip-icon {
+    font-size: 45px;
+}
+
+
+.tip h3 {
+    font-family: "Baloo 2";
+
+    font-size: 23px;
+
+    margin: 8px 0;
+}
+
+
+.tip p {
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================
+   SOBRE / PRODUTOS
+========================= */
+
+.about {
+    background: #dff7ec;
+}
+
+
+.about-grid {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 35px;
+
+    align-items: center;
+}
+
+
+.about-box {
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 8px 22px #075c4910;
+}
+
+
+.about-box h2 {
+    font-family: "Baloo 2";
+
+    font-size: 38px;
+}
+
+
+.about-box p {
+    line-height: 1.7;
+
+    margin-top: 12px;
+}
+
+
+.products {
+    font-size: 32px;
+
+    margin-top: 18px;
+}
+
+
+.stat-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+
+.stat {
+    background: #ecfff4;
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    text-align: center;
+}
+
+
+.stat strong {
+    display: block;
+
+    font-size: 28px;
+
+    color: #159e4d;
+}
+
+
+/* =========================
+   RODAPÉ
+========================= */
+
+footer {
+    background: #075c35;
+
+    color: white;
+
+    text-align: center;
+
+    padding: 35px 15px;
+}
+
+
+footer h2 {
+    font-family: "Baloo 2";
+
+    font-size: 31px;
+}
+
+
+footer p {
+    opacity: .9;
+
+    margin-top: 4px;
+}
+
+
+.back {
+    display: inline-block;
+
+    margin-top: 18px;
+
+    background: #20ad52;
+
+    padding: 9px 20px;
+
+    border-radius: 25px;
+
+    font-weight: 700;
+}
+
+
+/* =========================
+   CELULAR
+========================= */
+
+@media (max-width: 900px) {
+
+    .menu,
+    .badge {
+        display: none;
+    }
+
+
+    .menu-btn {
+        display: block;
+    }
+
+
+    .nav {
+        min-height: 75px;
+    }
+
+
+    .logo {
+        font-size: 25px;
+    }
+
+
+    .logo .leaf {
+        font-size: 43px;
+    }
+
+
+    .hero-inner {
+        grid-template-columns: 1fr;
+
+        min-height: 620px;
+    }
+
+
+    .hero-copy {
+        text-align: center;
+
+        padding-top: 40px;
+    }
+
+
+    .hero h1 {
+        font-size: 49px;
+    }
+
+
+    .hero p {
+        margin: auto;
+    }
+
+
+    .hero-art {
+        height: 300px;
+    }
+
+
+    .kid {
+        font-size: 130px;
+
+        left: 12%;
+    }
+
+
+    .earth {
+        font-size: 125px;
+
+        left: 40%;
+    }
+
+
+    .sign {
+        right: 5%;
+
+        top: 70px;
+
+        font-size: 18px;
+    }
+
+
+    .sun {
+        font-size: 55px;
+    }
+
+
+    .games-banner {
+        flex-direction: column;
+
+        text-align: center;
+    }
+
+
+    .games-banner-text {
+        width: 100%;
+    }
+
+
+    .games-button {
+        width: 100%;
+
+        text-align: center;
+    }
+
+
+    .principle-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .principle {
+        border: 0;
+    }
+
+
+    .tips-grid {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 550px) {
+
+    .hero-inner {
+        min-height: 680px;
+    }
+
+
+    .hero h1 {
+        font-size: 42px;
+    }
+
+
+    .hero h2 {
+        font-size: 23px;
+    }
+
+
+    .hero p {
+        font-size: 15px;
+    }
+
+
+    .hero-art {
+        height: 280px;
+    }
+
+
+    .kid {
+        font-size: 105px;
+    }
+
+
+    .earth {
+        font-size: 105px;
+    }
+
+
+    .sign {
+        font-size: 15px;
+
+        padding: 8px 12px;
+    }
+
+
+    .tree {
+        font-size: 80px;
+    }
+
+
+    .principle-grid,
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .principle {
+        padding: 10px;
+    }
+
+
+    .section-title {
+        font-size: 35px;
+    }
+
+
+    .games-banner {
+        padding: 22px 18px;
+    }
+
+
+    .games-banner h2 {
+        font-size: 27px;
+    }
+
+
+    .games-banner p {
+        font-size: 14px;
+    }
+
+}

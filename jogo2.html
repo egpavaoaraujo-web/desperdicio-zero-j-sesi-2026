@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎂 COZINHA DO BOLO</title>
+    <link rel="shortcut icon" href="image-Photoroom.ico" type="image/x-icon">
+    <link rel="stylesheet" href="jogo2C.css" />
+</head>
+
+<body>
+
+    <!-- ============ MENU INICIAL ============ -->
+    <section id="screen-menu" class="screen active">
+        <div class="menu-card">
+            <h1 class="game-title">🎂 COZINHA DO BOLO</h1>
+            <p class="game-subtitle">"Faça certo. Desperdice menos."</p>
+            <div class="menu-buttons">
+                <button class="btn btn-primary" data-nav="play">🍰 JOGAR</button>
+                <button class="btn" data-nav="levels">🗂️ FASES</button>
+                <button class="btn" data-nav="howto">📖 COMO JOGAR</button>
+                <button class="btn" data-nav="settings">⚙️ CONFIGURAÇÕES</button>
+            </div>
+            <div class="menu-deco">🎂 🧁 🍰</div>
+        </div>
+    </section>
+
+    <!-- ============ TELA DE FASES ============ -->
+    <section id="screen-levels" class="screen">
+        <div class="panel">
+            <h2>🗂️ FASES</h2>
+            <div id="level-grid" class="level-grid"></div>
+            <button class="btn btn-ghost" data-nav="menu">← VOLTAR</button>
+        </div>
+    </section>
+
+    <!-- ============ COMO JOGAR ============ -->
+    <section id="screen-howto" class="screen">
+        <div class="panel howto-panel">
+            <h2>📖 COMO JOGAR</h2>
+            <ol class="howto-list">
+                <li>👀 Observe o pedido do cliente.</li>
+                <li>🥄 Escolha os ingredientes e camadas.</li>
+                <li>🎂 Monte o bolo visualmente.</li>
+                <li>✅ Confira cada item antes de finalizar.</li>
+                <li>🤝 Entregue o pedido.</li>
+                <li>♻️ Evite desperdícios.</li>
+            </ol>
+            <div class="howto-warning">
+                🗑️ Você possui apenas <strong>UMA oportunidade</strong> para descartar um bolo errado.<br />
+                Depois disso, outro erro encerra a partida.
+            </div>
+            <button class="btn btn-ghost" data-nav="menu">← VOLTAR</button>
+        </div>
+    </section>
+
+    <!-- ============ CONFIGURAÇÕES ============ -->
+    <section id="screen-settings" class="screen">
+        <div class="panel settings-panel">
+            <h2>⚙️ CONFIGURAÇÕES</h2>
+
+            <label class="setting-row">
+                <span>🔊 Sons</span>
+                <label class="switch"><input type="checkbox" id="set-sound" /><span class="slider"></span></label>
+            </label>
+
+            <label class="setting-row">
+                <span>🎚️ Volume</span>
+                <input type="range" id="set-volume" min="0" max="100" value="70" />
+            </label>
+
+            <label class="setting-row">
+                <span>✨ Animações</span>
+                <label class="switch"><input type="checkbox" id="set-anim" /><span class="slider"></span></label>
+            </label>
+
+            <div class="setting-row">
+                <button class="btn btn-danger" id="btn-reset">🧹 Resetar Progresso</button>
+            </div>
+
+            <button class="btn btn-ghost" data-nav="menu">← VOLTAR</button>
+        </div>
+    </section>
+
+    <!-- ============ JOGO ============ -->
+    <section id="screen-game" class="screen">
+
+        <!-- HUD -->
+        <header class="hud">
+            <div class="hud-item" id="hud-level"><span class="hud-label">FASE</span><span class="hud-value"
+                    id="hud-level-val">—</span></div>
+            <div class="hud-item"><span class="hud-label">PONTOS</span><span class="hud-value" id="hud-score">0</span>
+            </div>
+            <div class="hud-item combo-wrap"><span class="hud-label">COMBO</span><span class="hud-value"
+                    id="hud-combo">🔥 x0</span></div>
+            <div class="hud-item"><span class="hud-label">🗑️ DESCARTE</span><span class="hud-value"
+                    id="hud-discard">1</span></div>
+            <div class="hud-item timer-wrap"><span class="hud-label">⏱️ TEMPO</span><span class="hud-value"
+                    id="hud-timer">00:00</span></div>
+            <div class="hud-item"><span class="hud-label">PEDIDOS</span><span class="hud-value"
+                    id="hud-progress">0/4</span></div>
+            <button class="btn btn-small" id="btn-quit">✖ Sair</button>
+        </header>
+
+        <div id="game-tip" class="game-tip"></div>
+
+        <main class="game-main">
+
+            <!-- PEDIDO DO CLIENTE -->
+            <section class="order-panel">
+                <div class="customer" id="customer">🧑‍🍳</div>
+                <div class="order-box">
+                    <h3>🎂 PEDIDO DO CLIENTE</h3>
+                    <ul class="order-list">
+                        <li><span class="order-emoji">🍰</span><span class="order-label">Massa:</span><span
+                                class="order-value" id="ord-batter">—</span></li>
+                        <li><span class="order-emoji">🔢</span><span class="order-label">Camadas:</span><span
+                                class="order-value" id="ord-layers">—</span></li>
+                        <li><span class="order-emoji">🍓</span><span class="order-label">Recheio:</span><span
+                                class="order-value" id="ord-filling">—</span></li>
+                        <li><span class="order-emoji">🟣</span><span class="order-label">Cobertura:</span><span
+                                class="order-value" id="ord-covering">—</span></li>
+                        <li><span class="order-emoji">⭐</span><span class="order-label">Decoração:</span><span
+                                class="order-value" id="ord-decoration">—</span></li>
+                    </ul>
+                </div>
+                <div class="queue-box" id="queue-box">
+                    <h4>Próximos pedidos</h4>
+                    <div id="queue-list" class="queue-list"></div>
+                </div>
+            </section>
+
+            <!-- MONTAGEM -->
+            <section class="build-panel">
+                <div class="cake-stage">
+                    <div id="cake-view" class="cake-view"></div>
+                </div>
+
+                <div class="steps-wrap">
+                    <div class="step-tabs" id="step-tabs">
+                        <button class="step-tab" data-step="batter">1. Massa</button>
+                        <button class="step-tab" data-step="layers">2. Camadas</button>
+                        <button class="step-tab" data-step="filling">3. Recheio</button>
+                        <button class="step-tab" data-step="covering">4. Cobertura</button>
+                        <button class="step-tab" data-step="decoration">5. Decoração</button>
+                    </div>
+                    <div class="step-content" id="step-content"></div>
+                </div>
+
+                <button class="btn btn-finish" id="btn-finalize">🎉 FINALIZAR BOLO</button>
+            </section>
+
+        </main>
+    </section>
+
+    <!-- ============ DIALOGO PRIMEIRO ERRO ============ -->
+    <div id="modal-error" class="modal hidden">
+        <div class="modal-card">
+            <h3>❌ PEDIDO ERRADO</h3>
+            <p>Você montou o bolo errado.</p>
+            <p>Você pode descartar este bolo <strong>uma única vez</strong>.</p>
+            <p class="discard-count">🗑️ DESCARTE RESTANTE: <strong>1</strong></p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="btn-discard">🗑️ DESCARTAR BOLO</button>
+                <button class="btn" id="btn-deliver-anyway">📦 ENTREGAR MESMO ASSIM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ TELA DE VITÓRIA ============ -->
+    <section id="screen-levelcomplete" class="screen">
+        <div class="panel center">
+            <h2 class="win-title">🎉 FASE COMPLETA!</h2>
+            <div class="stars-big" id="lc-stars"></div>
+            <div class="stats" id="lc-stats"></div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="lc-next">➡️ PRÓXIMA FASE</button>
+                <button class="btn" id="lc-replay">🔁 JOGAR NOVAMENTE</button>
+                <button class="btn btn-ghost" data-nav="menu">🏠 MENU</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ TELA DE DERROTA ============ -->
+    <section id="screen-gameover" class="screen">
+        <div class="panel center">
+            <h2 class="lose-title">💀 FIM DE JOGO</h2>
+            <p class="lose-sub">❌ Pedido errado — você já utilizou sua única oportunidade de descarte.</p>
+            <p class="lose-sub">Um novo erro desperdiçaria outro bolo. 🗑️</p>
+            <div class="stats" id="go-stats"></div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="go-replay">🔁 JOGAR NOVAMENTE</button>
+                <button class="btn btn-ghost" data-nav="menu">🏠 MENU</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="jogo2J.js"></script>
+</body>
+
+</html>

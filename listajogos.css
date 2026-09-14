@@ -1,0 +1,966 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap'
+);
+
+
+/* =====================================
+   RESET
+===================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    font-family: Poppins, Arial, sans-serif;
+
+    color: #075c49;
+
+    background: #f8fff9;
+}
+
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+button {
+    font: inherit;
+    border: 0;
+    cursor: pointer;
+}
+
+
+.container {
+    width: min(1180px, 92%);
+    margin: auto;
+}
+
+
+
+/* =====================================
+   CABEÇALHO
+===================================== */
+
+header {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    background: white;
+
+    box-shadow:
+        0 4px 18px #075c4918;
+}
+
+
+.nav {
+    min-height: 88px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 25px;
+}
+
+
+
+/* LOGO */
+
+.logo {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-family: "Baloo 2";
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    line-height: .78;
+
+    color: #08784e;
+}
+
+
+.logo .leaf {
+    font-size: 52px;
+
+    transform: rotate(-18deg);
+}
+
+
+.logo b {
+    color: #1ca94f;
+}
+
+
+
+/* MENU */
+
+.menu {
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+
+    font-weight: 600;
+}
+
+
+.menu a {
+    position: relative;
+
+    padding: 28px 0;
+
+    transition: .2s;
+}
+
+
+.menu a:hover,
+.menu a.active {
+    color: #159e4d;
+}
+
+
+.menu a.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 13px;
+
+    height: 4px;
+
+    border-radius: 10px;
+
+    background: #20ad52;
+}
+
+
+
+/* BADGE */
+
+.badge {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px 18px;
+
+    border-radius: 30px;
+
+    background: #e5faf4;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.badge span {
+    font-size: 28px;
+}
+
+
+
+/* BOTÃO MOBILE */
+
+.menu-btn {
+    display: none;
+
+    padding: 10px 13px;
+
+    border-radius: 12px;
+
+    background: #eaf9f1;
+
+    font-size: 23px;
+}
+
+
+
+/* =====================================
+   HERO
+===================================== */
+
+.games-hero {
+
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 65px 0 75px;
+
+    background:
+        linear-gradient(135deg,
+            #72ddf5 0%,
+            #b9f3e8 55%,
+            #ddf9d9 100%);
+
+}
+
+
+.games-hero::before {
+    content: "⭐";
+
+    position: absolute;
+
+    left: 8%;
+
+    top: 35px;
+
+    font-size: 40px;
+
+    animation: float 3s ease-in-out infinite;
+}
+
+
+.games-hero::after {
+    content: "🌱";
+
+    position: absolute;
+
+    right: 9%;
+
+    bottom: 35px;
+
+    font-size: 50px;
+
+    animation: float 4s ease-in-out infinite;
+}
+
+
+.hero-content {
+    max-width: 800px;
+
+    margin: auto;
+
+    text-align: center;
+}
+
+
+.hero-emoji {
+    font-size: 58px;
+
+    margin-bottom: 8px;
+
+    animation: bounce 2.5s ease-in-out infinite;
+}
+
+
+.small-title {
+    display: inline-block;
+
+    padding: 6px 15px;
+
+    border-radius: 20px;
+
+    background: white;
+
+    color: #159e4d;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+.games-hero h1 {
+    margin-top: 14px;
+
+    font-family: "Baloo 2";
+
+    font-size: clamp(43px, 6vw, 68px);
+
+    line-height: .98;
+
+    color: #075c49;
+}
+
+
+.games-hero h1 span {
+    display: block;
+
+    color: #159e4d;
+}
+
+
+.games-hero p {
+    max-width: 650px;
+
+    margin: 18px auto 0;
+
+    font-size: 18px;
+
+    line-height: 1.6;
+}
+
+
+
+/* =====================================
+   ÁREA DOS JOGOS
+===================================== */
+
+.games-section {
+    padding: 70px 0 80px;
+
+    background:
+        radial-gradient(circle at top left,
+            #e7fff1,
+            transparent 30%),
+        #f8fff9;
+}
+
+
+.section-heading {
+    text-align: center;
+
+    margin-bottom: 42px;
+}
+
+
+.section-heading>span {
+    font-size: 38px;
+}
+
+
+.section-heading h2 {
+    margin-top: 3px;
+
+    font-family: "Baloo 2";
+
+    font-size: 43px;
+
+    color: #075c49;
+}
+
+
+.section-heading p {
+    margin-top: 5px;
+
+    color: #41756a;
+}
+
+
+
+/* =====================================
+   GRID
+===================================== */
+
+.games-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 28px;
+}
+
+
+
+/* =====================================
+   CARD
+===================================== */
+
+.game-card {
+    overflow: hidden;
+
+    display: flex;
+
+    flex-direction: column;
+
+    background: white;
+
+    border-radius: 28px;
+
+    border: 3px solid white;
+
+    box-shadow:
+        0 10px 30px #075c4915;
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease;
+}
+
+
+.game-card:hover {
+    transform: translateY(-9px);
+
+    box-shadow:
+        0 18px 38px #075c4925;
+}
+
+
+
+/* =====================================
+   IMAGEM
+===================================== */
+
+.game-image {
+    width: 100%;
+
+    aspect-ratio: 1 / 0.8;
+
+    padding: 14px;
+
+    background: #eaf9f1;
+}
+
+
+.image-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    border: 3px dashed #91d5b3;
+
+    background:
+        linear-gradient(135deg,
+            #f7fff9,
+            #e9fff1);
+}
+
+
+.image-placeholder span {
+    font-size: 65px;
+
+    margin-bottom: 8px;
+}
+
+
+.image-placeholder strong {
+    font-family: "Baloo 2";
+
+    font-size: 20px;
+
+    color: #159e4d;
+}
+
+
+.image-placeholder small {
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    color: #5b8c7e;
+}
+
+
+
+/*
+   QUANDO VOCÊ TIVER A IMAGEM,
+   PODE SUBSTITUIR O PLACEHOLDER POR:
+
+   <img src="imagens/jogo1.png" alt="Full Basket">
+
+   E usar:
+
+   .game-image img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       border-radius: 20px;
+   }
+*/
+
+
+
+/* =====================================
+   INFORMAÇÕES
+===================================== */
+
+.game-info {
+    display: flex;
+
+    flex-direction: column;
+
+    flex: 1;
+
+    padding: 25px;
+}
+
+
+.game-number {
+    align-self: flex-start;
+
+    padding: 5px 11px;
+
+    border-radius: 15px;
+
+    background: #e8f8ef;
+
+    color: #159e4d;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: .7px;
+}
+
+
+.game-info h3 {
+    margin-top: 11px;
+
+    font-family: "Baloo 2";
+
+    font-size: 29px;
+
+    line-height: 1.05;
+
+    color: #075c49;
+}
+
+
+.game-info p {
+    margin-top: 10px;
+
+    min-height: 67px;
+
+    color: #52776e;
+
+    font-size: 14px;
+
+    line-height: 1.55;
+}
+
+
+
+/* =====================================
+   BOTÃO JOGAR
+===================================== */
+
+.play-button {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 20px;
+
+    padding: 13px 18px;
+
+    border-radius: 18px;
+
+    background: #159e4d;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 5px 0 #08763d;
+
+    transition: .2s;
+}
+
+
+.play-button span {
+    font-size: 21px;
+
+    transition: .2s;
+}
+
+
+.play-button:hover {
+    transform: translateY(3px);
+
+    box-shadow:
+        0 2px 0 #08763d;
+}
+
+
+.play-button:hover span {
+    transform: translateX(5px);
+}
+
+
+
+/* =====================================
+   CORES DOS CARDS
+===================================== */
+
+.card-green .game-image {
+    background: #d9f7df;
+}
+
+
+.card-yellow .game-image {
+    background: #fff1c7;
+}
+
+
+.card-purple .game-image {
+    background: #e7e0ff;
+}
+
+
+.card-blue .game-image {
+    background: #d9efff;
+}
+
+
+.card-orange .game-image {
+    background: #ffe2c8;
+}
+
+
+
+/* =====================================
+   QUINTO CARD CENTRALIZADO
+===================================== */
+
+.game-card:nth-child(4) {
+    grid-column: 1 / 2;
+}
+
+
+.game-card:nth-child(5) {
+    grid-column: 2 / 3;
+}
+
+
+
+/* =====================================
+   MENSAGEM FINAL
+===================================== */
+
+.final-message {
+    padding: 0 0 70px;
+
+    background: #f8fff9;
+}
+
+
+.final-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 25px 30px;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(135deg,
+            #dff8e7,
+            #d8f4ff);
+
+    border: 3px solid white;
+
+    box-shadow:
+        0 8px 25px #075c4910;
+}
+
+
+.final-icon {
+    width: 70px;
+    height: 70px;
+
+    display: grid;
+
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: white;
+
+    font-size: 40px;
+}
+
+
+.final-box h2 {
+    font-family: "Baloo 2";
+
+    font-size: 27px;
+}
+
+
+.final-box p {
+    margin-top: 3px;
+
+    font-size: 14px;
+}
+
+
+.final-stars {
+    margin-left: auto;
+
+    font-size: 22px;
+
+    white-space: nowrap;
+}
+
+
+
+/* =====================================
+   RODAPÉ
+===================================== */
+
+footer {
+    padding: 40px 15px;
+
+    background: #075c35;
+
+    color: white;
+
+    text-align: center;
+}
+
+
+footer h2 {
+    font-family: "Baloo 2";
+
+    font-size: 31px;
+}
+
+
+footer p {
+    margin-top: 4px;
+
+    opacity: .9;
+}
+
+
+.back {
+    display: inline-block;
+
+    margin-top: 18px;
+
+    padding: 10px 22px;
+
+    border-radius: 25px;
+
+    background: #20ad52;
+
+    font-weight: 700;
+
+    transition: .2s;
+}
+
+
+.back:hover {
+    transform: translateY(-3px);
+
+    background: #27bd5c;
+}
+
+
+
+/* =====================================
+   ANIMAÇÕES
+===================================== */
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+
+}
+
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+}
+
+
+
+/* =====================================
+   TABLET
+===================================== */
+
+@media (max-width: 1050px) {
+
+    .badge {
+        display: none;
+    }
+
+
+    .games-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .game-card:nth-child(4),
+    .game-card:nth-child(5) {
+        grid-column: auto;
+    }
+
+}
+
+
+
+/* =====================================
+   CELULAR
+===================================== */
+
+@media (max-width: 800px) {
+
+    .menu {
+        display: none;
+    }
+
+
+    .menu-btn {
+        display: block;
+    }
+
+
+    .games-hero {
+        padding: 50px 0 60px;
+    }
+
+
+    .hero-emoji {
+        font-size: 48px;
+    }
+
+
+    .games-hero h1 {
+        font-size: 45px;
+    }
+
+
+    .games-hero p {
+        font-size: 16px;
+    }
+
+
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .game-card:nth-child(4),
+    .game-card:nth-child(5) {
+        grid-column: auto;
+    }
+
+
+    .final-box {
+        flex-direction: column;
+
+        text-align: center;
+    }
+
+
+    .final-stars {
+        margin-left: 0;
+    }
+
+}
+
+
+
+/* =====================================
+   CELULAR PEQUENO
+===================================== */
+
+@media (max-width: 500px) {
+
+    .logo {
+        font-size: 24px;
+    }
+
+
+    .logo .leaf {
+        font-size: 42px;
+    }
+
+
+    .games-hero h1 {
+        font-size: 39px;
+    }
+
+
+    .section-heading h2 {
+        font-size: 34px;
+    }
+
+
+    .games-section {
+        padding-top: 50px;
+    }
+
+
+    .game-info {
+        padding: 21px;
+    }
+
+
+    .game-info h3 {
+        font-size: 26px;
+    }
+
+}
+
+
+.game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    display: block;
+}
