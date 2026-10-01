@@ -1,3 +1,4 @@
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
@@ -16,6 +17,7 @@ let joyBase = null;
 
 function createMobileControls() {
     if (!isTouchDevice) return;
+    if (document.getElementById("mobileControls")) return;
 
     // Container dos controles
     touchControls = document.createElement("div");
@@ -34,19 +36,27 @@ function createMobileControls() {
     // Estilos dos controles (injetados)
     const style = document.createElement("style");
     style.textContent = `
+        #game {
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
         #mobileControls {
             position: absolute;
             inset: 0;
             pointer-events: none;
             z-index: 5;
+            -webkit-user-select: none;
+            user-select: none;
         }
         #joystickZone {
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 180px;
-            height: 180px;
+            width: 200px;
+            height: 200px;
             pointer-events: auto;
+            touch-action: none;
         }
         #joyBase {
             position: absolute;
@@ -87,8 +97,8 @@ function createMobileControls() {
         #btnInteract {
             right: 22px;
             bottom: 36px;
-            width: 72px;
-            height: 72px;
+            width: 76px;
+            height: 76px;
             font-size: 22px;
         }
         #btnPause {
@@ -108,7 +118,7 @@ function createMobileControls() {
             #joystickZone { width: 150px; height: 140px; }
             #joyBase { left: 18px; bottom: 16px; width: 96px; height: 96px; }
             #joyKnob { width: 40px; height: 40px; margin: -20px 0 0 -20px; }
-            #btnInteract { right: 16px; bottom: 18px; width: 60px; height: 60px; font-size: 18px; }
+            #btnInteract { right: 16px; bottom: 18px; width: 62px; height: 62px; font-size: 18px; }
             #btnPause { right: 18px; top: 60px; width: 42px; height: 42px; }
         }
     `;
@@ -123,22 +133,38 @@ function createMobileControls() {
     joyBase.addEventListener("touchend", onJoyEnd, { passive: false });
     joyBase.addEventListener("touchcancel", onJoyEnd, { passive: false });
 
-    // Botão interagir
-    document.getElementById("btnInteract").addEventListener("touchstart", (e) => {
+    // Botão interagir (touchstart + click para máxima compatibilidade)
+    const btnInteract = document.getElementById("btnInteract");
+    btnInteract.addEventListener("touchstart", (e) => {
         e.preventDefault();
+        e.stopPropagation();
         interact();
     }, { passive: false });
+    btnInteract.addEventListener("click", (e) => {
+        e.preventDefault();
+        interact();
+    });
 
     // Botão pause
-    document.getElementById("btnPause").addEventListener("touchstart", (e) => {
+    const btnPause = document.getElementById("btnPause");
+    btnPause.addEventListener("touchstart", (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (running) togglePause();
     }, { passive: false });
+    btnPause.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (running) togglePause();
+    });
 
-    // Evita zoom / scroll
+    // Evita zoom / scroll / menu de contexto
     document.getElementById("game").addEventListener("touchmove", (e) => {
-        if (e.target.closest("#joystickZone, #btnInteract, #btnPause")) e.preventDefault();
+        e.preventDefault();
     }, { passive: false });
+
+    document.getElementById("game").addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+    });
 }
 
 function onJoyStart(e) {
@@ -163,7 +189,7 @@ function onJoyEnd(e) {
     joyActive = false;
     joyDir.x = 0;
     joyDir.y = 0;
-    joyKnob.style.transform = "translate(0,0)";
+    if (joyKnob) joyKnob.style.transform = "translate(0,0)";
     // limpa teclas virtuais
     keys["w"] = keys["s"] = keys["a"] = keys["d"] = false;
     keys["arrowup"] = keys["arrowdown"] = keys["arrowleft"] = keys["arrowright"] = false;
@@ -213,11 +239,11 @@ document.addEventListener("click", (e) => {
     if (e.target.closest(".interact")) interact();
 });
 
-// ========== RESTANTE DO JOGO (igual + pequenos ajustes) ==========
+// ========== RESTANTE DO JOGO ==========
 const player = { x: 120, y: 300, w: 26, h: 34, speed: 175, carrying: null };
 let state = {
     water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0,
-    money: 50, waste: 0, meals: 0, bought: 0, stored: 0
+    money: 50, waste: 0, meals: 0, bought: 0, stored: 0, boxT: 0, boxC: 0
 };
 const phases = [
     {
@@ -322,13 +348,13 @@ function obj(type, x, y, w, h, icon, label, sub = "", index = 0) {
     return { type, x, y, w, h, icon, label, sub, index, state: 0, used: false };
 }
 function resetState() {
-    state = { water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0, money: 50, waste: 0, meals: 0, bought: 0, stored: 0 };
+    state = { water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0, money: 50, waste: 0, meals: 0, bought: 0, stored: 0, boxT: 0, boxC: 0 };
     phaseIndex = 0;
 }
 function startGame() {
     resetState(); loadPhase(0);
     document.getElementById("startScreen").classList.add("hidden");
-    running = true; paused = false; requestAnimationFrame(loop);
+    running = true; paused = false; last = 0; requestAnimationFrame(loop);
 }
 function loadPhase(i) {
     phaseIndex = i;
@@ -385,7 +411,7 @@ function nearObject() {
     for (const o of objects) {
         const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
         const d = Math.hypot((player.x + player.w / 2) - cx, (player.y + player.h / 2) - cy);
-        if (d < Math.max(o.w, o.h) * .65 + 25 && d < bd) { best = o; bd = d; }
+        if (d < Math.max(o.w, o.h) * .65 + 30 && d < bd) { best = o; bd = d; }
     }
     return best;
 }
@@ -393,7 +419,7 @@ let interactionLock = false;
 function interact() {
     if (!running || paused || interactionLock) return;
     const o = nearObject(); if (!o) return;
-    interactionLock = true; setTimeout(() => interactionLock = false, 250);
+    interactionLock = true; setTimeout(() => interactionLock = false, 180);
     const p = phaseIndex;
     if (p === 0) farmInteract(o);
     else if (p === 1) storageInteract(o);
@@ -418,8 +444,12 @@ function farmInteract(o) {
             if (state.water < 10) { showMessage("Pegue água no reservatório."); return; }
             o.state = 3; state.water -= 10; showMessage("Planta regada! Espere um pouco...");
             setTimeout(() => { if (o.state === 3) { o.state = 4; updateHUD(); showMessage("Uma planta cresceu! 🍅"); } }, 3500);
+        } else if (o.state === 3) {
+            showMessage("A planta ainda está crescendo...");
         } else if (o.state === 4) {
             o.state = 5; state.tomatoes++; showMessage("Você colheu um alimento!");
+        } else if (o.state === 5) {
+            showMessage("Este terreno já foi colhido.");
         }
     } else if (o.type === "water") {
         state.water = Math.min(100, state.water + 40); showMessage("Reservatório abastecido: +40 água.");
@@ -428,31 +458,85 @@ function farmInteract(o) {
         else showMessage("Você precisa colher 3 alimentos.");
     }
 }
+
+// ========== FASE 2 (ARMAZENAMENTO) CORRIGIDA ==========
+// Antes: o estoque era marcado como "used" na 1ª caixa e travava a 2ª.
+// Agora: o estoque libera 1 caixa de tomate e depois 1 caixa de cenoura.
 function storageInteract(o) {
-    if (o.type === "stock" && !o.used) {
-        o.used = true; player.carrying = "box"; state.boxes++; showMessage("Você pegou uma caixa de tomates.");
-    } else if (o.type === "tomatoSpot" && player.carrying === "box") {
-        player.carrying = null; showMessage("Caixa de tomates organizada!");
-        o.used = true;
-    } else if (o.type === "stock" && o.used === false) {
-        player.carrying = "boxC"; state.boxes++; o.used = true;
-    } else if (o.type === "carrotSpot" && player.carrying) {
-        player.carrying = null; o.used = true; showMessage("Caixa de cenouras organizada!");
+    const tomatoSpot = objects.find(x => x.type === "tomatoSpot");
+    const carrotSpot = objects.find(x => x.type === "carrotSpot");
+
+    if (o.type === "stock") {
+        if (player.carrying) {
+            showMessage("Você já está carregando uma caixa. Entregue antes de pegar outra.");
+            return;
+        }
+        if (state.boxT < 1) {
+            player.carrying = "box";
+            state.boxT = 1;
+            state.boxes++;
+            showMessage("Você pegou uma caixa de tomates.");
+        } else if (state.boxC < 1) {
+            player.carrying = "boxC";
+            state.boxC = 1;
+            state.boxes++;
+            showMessage("Você pegou uma caixa de cenouras.");
+        } else {
+            showMessage("Todas as caixas já foram organizadas.");
+        }
+        return;
     }
-    if (o.type === "tomatoSpot" && o.used && !player.carrying) showMessage("Tomates já organizados.");
+
+    if (o.type === "tomatoSpot") {
+        if (player.carrying === "box") {
+            player.carrying = null;
+            state.boxT = 2;
+            o.used = true;
+            showMessage("Caixa de tomates organizada!");
+        } else if (state.boxT >= 2) {
+            showMessage("Os tomates já foram organizados.");
+        } else if (player.carrying === "boxC") {
+            showMessage("Essa é a caixa de cenoura. Leve ao local das cenouras.");
+        } else {
+            showMessage("Pegue uma caixa de tomates no estoque.");
+        }
+        return;
+    }
+
+    if (o.type === "carrotSpot") {
+        if (player.carrying === "boxC") {
+            player.carrying = null;
+            state.boxC = 2;
+            o.used = true;
+            showMessage("Caixa de cenouras organizada!");
+        } else if (state.boxC >= 2) {
+            showMessage("As cenouras já foram organizadas.");
+        } else if (player.carrying === "box") {
+            showMessage("Essa é a caixa de tomate. Leve ao local dos tomates.");
+        } else {
+            showMessage("Pegue uma caixa de cenouras no estoque.");
+        }
+        return;
+    }
+
+    if (o.type === "exit") {
+        showMessage("Organize as duas caixas para liberar a saída.");
+    }
 }
+
 function storageObjectives() {
-    return [objects.find(o => o.type === "tomatoSpot")?.used, objects.find(o => o.type === "tomatoSpot")?.used, objects.find(o => o.type === "carrotSpot")?.used, objects.find(o => o.type === "carrotSpot")?.used];
+    return [state.boxT >= 1, state.boxT >= 2, state.boxC >= 1, state.boxC >= 2];
 }
 function transportInteract(o) {
     if (o.type === "truck" && !o.used) { o.used = true; player.carrying = "truck"; showMessage("Você entrou no caminhão!"); }
     else if (o.type === "market" && player.carrying === "truck") { o.used = true; player.carrying = null; showMessage("Carga entregue sem desperdício!"); }
 }
 function marketInteract(o) {
-    if (o.type === "stock" && !o.used) { o.used = true; player.carrying = "tomatoBox"; showMessage("Pegou uma caixa de tomates."); }
+    if (o.type === "stock" && !player.carrying && !o.used) { o.used = true; player.carrying = "tomatoBox"; showMessage("Pegou uma caixa de tomates."); }
     else if (o.type === "shelfT" && player.carrying === "tomatoBox") { o.used = true; player.carrying = null; showMessage("Tomates repostos."); }
     else if (o.type === "stock" && o.used && !player.carrying) { player.carrying = "carrotBox"; showMessage("Pegou uma caixa de cenouras."); }
     else if (o.type === "shelfC" && player.carrying === "carrotBox") { o.used = true; player.carrying = null; showMessage("Cenouras repostas."); }
+    else if (o.type === "stock" && player.carrying) showMessage("Entregue a caixa que você já está carregando.");
 }
 function shoppingInteract(o) {
     if (o.type === "tomatoes" && !o.used) { o.used = true; state.bought += 2; showMessage("Você pegou 2 tomates. Só compre o necessário!"); }
@@ -480,12 +564,13 @@ function objectivesDone() {
         objects.filter(o => o.type === "soil" && o.state >= 3).length >= 3 &&
         objects.filter(o => o.type === "soil" && o.state >= 5).length >= 3 &&
         state.stored >= 3;
-    if (p === 1) return objects.find(o => o.type === "tomatoSpot")?.used && objects.find(o => o.type === "carrotSpot")?.used;
-    if (p === 2) return objects.find(o => o.type === "market")?.used;
-    if (p === 3) return objects.find(o => o.type === "shelfT")?.used && objects.find(o => o.type === "shelfC")?.used;
-    if (p === 4) return objects.find(o => o.type === "checkout")?.used;
-    if (p === 5) return objects.find(o => o.type === "table")?.used;
-    if (p === 6) return state.meals >= 1 && objects.find(o => o.type === "table")?.used;
+    if (p === 1) return state.boxT >= 2 && state.boxC >= 2;
+    if (p === 2) return !!objects.find(o => o.type === "market")?.used;
+    if (p === 3) return !!objects.find(o => o.type === "shelfT")?.used && !!objects.find(o => o.type === "shelfC")?.used;
+    if (p === 4) return !!objects.find(o => o.type === "checkout")?.used;
+    if (p === 5) return !!objects.find(o => o.type === "table")?.used;
+    if (p === 6) return state.meals >= 1 && !!objects.find(o => o.type === "table")?.used;
+    return false;
 }
 function checkPhase() {
     if (objectivesDone()) {
@@ -507,25 +592,44 @@ function updateHUD() {
             ["Guardar a colheita", state.stored >= 3]
         ];
     } else if (p === 1) {
-        list = [["Pegar caixa de tomate", !!objects.find(o => o.type === "tomatoSpot")?.used],
-        ["Organizar tomate", !!objects.find(o => o.type === "tomatoSpot")?.used],
-        ["Pegar caixa de cenoura", !!objects.find(o => o.type === "carrotSpot")?.used],
-        ["Organizar cenoura", !!objects.find(o => o.type === "carrotSpot")?.used]];
+        list = [
+            ["Pegar caixa de tomate", state.boxT >= 1],
+            ["Organizar tomate", state.boxT >= 2],
+            ["Pegar caixa de cenoura", state.boxC >= 1],
+            ["Organizar cenoura", state.boxC >= 2]
+        ];
     } else if (p === 2) {
-        list = [["Entrar no caminhão", !!objects.find(o => o.type === "truck")?.used],
-        ["Chegar ao mercado", !!objects.find(o => o.type === "market")?.used],
-        ["Entregar a carga", !!objects.find(o => o.type === "market")?.used]];
+        list = [
+            ["Entrar no caminhão", !!objects.find(o => o.type === "truck")?.used],
+            ["Chegar ao mercado", !!objects.find(o => o.type === "market")?.used],
+            ["Entregar a carga", !!objects.find(o => o.type === "market")?.used]
+        ];
     } else if (p === 3) {
-        list = [["Pegar caixa do estoque", !!objects.find(o => o.type === "shelfT")?.used || !!objects.find(o => o.type === "shelfC")?.used],
-        ["Repor tomate", !!objects.find(o => o.type === "shelfT")?.used],
-        ["Pegar segunda caixa", !!objects.find(o => o.type === "shelfC")?.used],
-        ["Repor cenoura", !!objects.find(o => o.type === "shelfC")?.used]];
+        list = [
+            ["Pegar caixa do estoque", !!objects.find(o => o.type === "shelfT")?.used || !!objects.find(o => o.type === "shelfC")?.used],
+            ["Repor tomate", !!objects.find(o => o.type === "shelfT")?.used],
+            ["Pegar segunda caixa", !!objects.find(o => o.type === "shelfC")?.used],
+            ["Repor cenoura", !!objects.find(o => o.type === "shelfC")?.used]
+        ];
     } else if (p === 4) {
-        list = [["Pegar 2 tomates", state.bought >= 2], ["Pegar 1 cenoura", state.bought >= 3], ["Levar ao caixa", !!objects.find(o => o.type === "checkout")?.used]];
+        list = [
+            ["Pegar 2 tomates", state.bought >= 2],
+            ["Pegar 1 cenoura", state.bought >= 3],
+            ["Levar ao caixa", !!objects.find(o => o.type === "checkout")?.used]
+        ];
     } else if (p === 5) {
-        list = [["Guardar os alimentos", !!objects.find(o => o.type === "bags")?.used], ["Abrir a geladeira", !!objects.find(o => o.type === "fridge")?.used], ["Planejar a refeição", !!objects.find(o => o.type === "table")?.used]];
+        list = [
+            ["Guardar os alimentos", !!objects.find(o => o.type === "bags")?.used],
+            ["Abrir a geladeira", !!objects.find(o => o.type === "fridge")?.used],
+            ["Planejar a refeição", !!objects.find(o => o.type === "table")?.used]
+        ];
     } else {
-        list = [["Pegar ingredientes", !!objects.find(o => o.type === "fridge")?.used], ["Preparar a refeição", !!objects.find(o => o.type === "counter")?.used], ["Servir", state.meals >= 1], ["Aproveitar a refeição", state.meals >= 1]];
+        list = [
+            ["Pegar ingredientes", !!objects.find(o => o.type === "fridge")?.used],
+            ["Preparar a refeição", !!objects.find(o => o.type === "counter")?.used],
+            ["Servir", state.meals >= 1],
+            ["Aproveitar a refeição", state.meals >= 1]
+        ];
     }
     document.getElementById("objectives").innerHTML = list.map(x => `<div class="${x[1] ? 'done' : ''}">${x[1] ? '☑' : '☐'} ${x[0]}</div>`).join("");
 }
@@ -543,16 +647,16 @@ function draw() {
 function drawDecor(p) {
     ctx.save();
     if (p === 0) {
-        for (let x = 0; x < W; x += 48)for (let y = 0; y < H; y += 48) {
+        for (let x = 0; x < W; x += 48) for (let y = 0; y < H; y += 48) {
             ctx.strokeStyle = "#ffffff18"; ctx.strokeRect(x, y, 48, 48);
         }
         for (let i = 0; i < 20; i++) { ctx.fillStyle = "#5a9f4f"; ctx.fillRect((i * 83) % W, ((i * 137) % H), 4, 9); }
     } else if (p === 2) {
         ctx.fillStyle = "#69747d"; ctx.fillRect(0, 240, W, 120);
-        ctx.fillStyle = "#c9b84e"; for (let x = 0; x < W; x += 60)ctx.fillRect(x, 294, 35, 7);
+        ctx.fillStyle = "#c9b84e"; for (let x = 0; x < W; x += 60) ctx.fillRect(x, 294, 35, 7);
     } else {
-        ctx.fillStyle = "#ffffff25"; for (let x = 0; x < W; x += 80)ctx.fillRect(x, 0, 2, H);
-        for (let y = 0; y < H; y += 80)ctx.fillRect(0, y, W, 2);
+        ctx.fillStyle = "#ffffff25"; for (let x = 0; x < W; x += 80) ctx.fillRect(x, 0, 2, H);
+        for (let y = 0; y < H; y += 80) ctx.fillRect(0, y, W, 2);
     }
     ctx.restore();
 }
@@ -591,15 +695,28 @@ function drawPlayer() {
 function loop(t) {
     if (!running) return;
     const dt = Math.min(.033, (t - last) / 1000 || 0); last = t;
-    if (!paused) { move(dt); draw(); const o = nearObject(); document.getElementById("interaction").innerHTML = o ? `<div class="interact">[E] ${actionText(o)}</div>` : ""; updateHUD(); }
+    if (!paused) {
+        move(dt);
+        draw();
+        const o = nearObject();
+        document.getElementById("interaction").innerHTML = o ? `<div class="interact">[E] ${actionText(o)}</div>` : "";
+        updateHUD();
+    }
     requestAnimationFrame(loop);
 }
 function actionText(o) {
     if (phaseIndex === 0) {
-        if (o.type === "soil") return o.state === 0 ? "PREPARAR TERRA" : o.state === 1 ? "PLANTAR" : o.state === 2 ? "REGAR" : o.state === 3 ? "AGUARDAR CRESCIMENTO" : "COLHER";
-        if (o.type === "seed") return "Pegar sementes"; if (o.type === "water") return "Pegar água"; if (o.type === "shed") return "Armazenar colheita";
+        if (o.type === "soil") return o.state === 0 ? "PREPARAR TERRA" : o.state === 1 ? "PLANTAR" : o.state === 2 ? "REGAR" : o.state === 3 ? "AGUARDAR CRESCIMENTO" : o.state === 4 ? "COLHER" : "COLHIDO";
+        if (o.type === "seed") return "Pegar sementes";
+        if (o.type === "water") return "Pegar água";
+        if (o.type === "shed") return "Armazenar colheita";
     }
-    if (phaseIndex === 1) { if (o.type === "stock") return "Pegar caixa"; if (o.type === "tomatoSpot") return "Organizar tomates"; if (o.type === "carrotSpot") return "Organizar cenouras"; }
+    if (phaseIndex === 1) {
+        if (o.type === "stock") return state.boxT < 1 ? "Pegar caixa de tomate" : state.boxC < 1 ? "Pegar caixa de cenoura" : "Estoque vazio";
+        if (o.type === "tomatoSpot") return "Organizar tomates";
+        if (o.type === "carrotSpot") return "Organizar cenouras";
+        if (o.type === "exit") return "Saída";
+    }
     if (phaseIndex === 2) { if (o.type === "truck") return "Entrar no caminhão"; if (o.type === "market") return "Entregar carga"; }
     if (phaseIndex === 3) { if (o.type === "stock") return "Pegar caixa"; if (o.type === "shelfT") return "Repor tomates"; if (o.type === "shelfC") return "Repor cenouras"; }
     if (phaseIndex === 4) { if (o.type === "tomatoes") return "Pegar 2 tomates"; if (o.type === "carrots") return "Pegar 1 cenoura"; if (o.type === "promo") return "Ver promoção"; if (o.type === "checkout") return "Passar no caixa"; }
