@@ -1,7 +1,6 @@
-
 /* ============================================================
-   style.css — Da Fazenda ao Prato
-   Estilos base do jogo, HUD, telas e responsividade
+   jogo4C.css — Do Alimento ao Prato
+   HUD, prompt, mensagens, telas e responsividade (mobile)
    ============================================================ */
 
 /* ---------- Reset ---------- */
@@ -48,76 +47,107 @@ body {
     background: #111;
 }
 
-/* ---------- HUD ---------- */
-#phaseName {
+/* ============================================================
+   HUD
+   ============================================================ */
+#hud {
     position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 6px 18px;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.6);
-    color: #ffdf00;
-    font-weight: 900;
-    font-size: 14px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    white-space: nowrap;
+    inset: 0;
     pointer-events: none;
     z-index: 6;
+}
+
+/* ---------- Barra superior ---------- */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+}
+
+.brand {
+    background: rgba(0, 0, 0, 0.62);
+    color: #ffdf00;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+#phaseName {
+    background: rgba(0, 0, 0, 0.62);
+    color: #fff;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 999px;
+    white-space: nowrap;
 }
 
 #stats {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 6px 12px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.62);
     color: #fff;
-    font-size: 13px;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 10px;
     white-space: nowrap;
-    pointer-events: none;
-    z-index: 6;
 }
 
-/* Lista de requisitos da fase */
-#objectives {
+/* ---------- Caixa de objetivo ---------- */
+.mission {
     position: absolute;
-    top: 52px;
+    top: 54px;
     left: 10px;
+    max-width: 48%;
+}
+
+.mission > b {
+    display: inline-block;
+    background: #4b8f42;
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    padding: 4px 12px;
+    border-radius: 8px;
+}
+
+#objectives {
+    margin-top: 6px;
     background: rgba(0, 0, 0, 0.60);
     color: #fff;
     padding: 8px 12px;
     border-radius: 10px;
-    max-width: 48%;
     line-height: 1.5;
     font-size: 13px;
-    pointer-events: none;
-    z-index: 6;
 }
 
 #objectives .done {
     color: #7dff8a;
 }
 
-/* Prompt de interação ([E] ...) */
+/* ---------- Prompt de interação [E] ---------- */
 #interaction {
     position: absolute;
     left: 50%;
     bottom: 16px;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.74);
     color: #fff;
-    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 8px 18px;
     border-radius: 999px;
     white-space: nowrap;
-    font-size: 13px;
-    font-weight: bold;
-    z-index: 6;
+    pointer-events: auto;
+    z-index: 7;
 }
 
-/* Mensagens do jogo */
+/* ---------- Mensagens ---------- */
 #message {
     position: absolute;
     left: 50%;
@@ -125,10 +155,11 @@ body {
     transform: translateX(-50%);
     max-width: 90%;
     text-align: center;
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.74);
     color: #fff;
     font-weight: bold;
-    padding: 8px 14px;
+    font-size: 13px;
+    padding: 8px 16px;
     border-radius: 10px;
     opacity: 0;
     transition: opacity 0.25s ease;
@@ -139,100 +170,210 @@ body {
     opacity: 1;
 }
 
-/* ---------- Telas (início / pausa / fim) ---------- */
+/* ============================================================
+   TELAS (início / pausa / fim)
+   ============================================================ */
 .screen {
     position: absolute;
     inset: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    padding: 24px;
-    text-align: center;
+    padding: 20px;
     background: rgba(6, 12, 26, 0.92);
-    color: #fff;
     z-index: 20;
 }
 
-.screen h1 {
-    font-size: clamp(22px, 5vw, 40px);
-    color: #ffdf00;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.screen h2 {
-    font-size: clamp(18px, 4vw, 28px);
+.panel {
+    width: min(680px, 100%);
+    max-height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 28px 24px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #16233c, #0f172a);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+    text-align: center;
     color: #fff;
 }
 
-.screen p {
-    max-width: 620px;
+.big-icon {
+    font-size: 46px;
+    line-height: 1;
+}
+
+.panel h1 {
+    font-size: clamp(20px, 5vw, 36px);
+    color: #ffdf00;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.panel h2 {
+    font-size: clamp(18px, 4vw, 28px);
+    color: #ffdf00;
+    letter-spacing: 2px;
+}
+
+.panel p {
+    max-width: 560px;
     font-size: clamp(13px, 3vw, 16px);
     line-height: 1.6;
     color: #cbd5e1;
 }
 
-.screen button {
+.panel small {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+.finalText {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 14px;
+}
+
+.panel button {
     border: 0;
     padding: 14px 32px;
     border-radius: 999px;
     background: #65c466;
     color: #0b2510;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
+    letter-spacing: 1px;
     cursor: pointer;
     transition: transform 0.15s ease, filter 0.15s ease;
     touch-action: manipulation;
+    min-width: 220px;
 }
 
-.screen button:hover {
+.panel button:hover {
     filter: brightness(1.08);
 }
 
-.screen button:active {
+.panel button:active {
     transform: scale(0.95);
 }
 
+.panel button.secondary {
+    background: #334155;
+    color: #fff;
+}
+
 #finalStats {
-    background: rgba(255, 255, 255, 0.08);
+    width: 100%;
+    background: rgba(255, 255, 255, 0.07);
     border-radius: 14px;
-    padding: 16px 22px;
+    padding: 16px 20px;
     line-height: 1.9;
+    font-size: 14px;
 }
 
 .hidden {
     display: none !important;
 }
 
-/* ---------- Responsividade ---------- */
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
 @media (max-width: 700px) {
+    .topbar {
+        padding: 6px 8px;
+        gap: 6px;
+    }
+
+    .brand {
+        font-size: 10px;
+        padding: 5px 9px;
+        letter-spacing: 0;
+    }
+
     #phaseName {
-        font-size: 11px;
-        padding: 5px 12px;
+        font-size: 10px;
+        padding: 5px 10px;
         letter-spacing: 1px;
     }
 
     #stats {
-        font-size: 11px;
-        padding: 5px 9px;
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+
+    .mission {
+        top: 46px;
+        left: 8px;
+        max-width: 62%;
+    }
+
+    .mission > b {
+        font-size: 10px;
+        padding: 3px 9px;
     }
 
     #objectives {
-        max-width: 60%;
         font-size: 12px;
+        padding: 7px 10px;
+    }
+
+    #interaction {
+        font-size: 12px;
+        padding: 7px 14px;
+        bottom: 104px;
+    }
+
+    #message {
+        font-size: 12px;
+        bottom: 148px;
+    }
+
+    .panel {
+        padding: 22px 18px;
+        gap: 12px;
+        border-radius: 18px;
+    }
+
+    .big-icon {
+        font-size: 38px;
+    }
+
+    .panel button {
+        width: 100%;
+        min-width: 0;
     }
 }
 
 @media (max-height: 500px) and (orientation: landscape) {
+    .mission {
+        top: 42px;
+        max-width: 46%;
+    }
+
     #interaction {
         bottom: 8px;
-        font-size: 12px;
+        font-size: 11px;
+        padding: 6px 12px;
     }
 
     #message {
-        bottom: 48px;
-        font-size: 13px;
+        bottom: 44px;
+        font-size: 11px;
+    }
+
+    .panel {
+        padding: 16px;
+        gap: 10px;
+    }
+
+    .big-icon {
+        font-size: 30px;
+    }
+
+    .panel button {
+        padding: 10px 22px;
     }
 }
