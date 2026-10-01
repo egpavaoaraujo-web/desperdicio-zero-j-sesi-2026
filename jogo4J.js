@@ -1,10 +1,10 @@
 /* ============================================================
    jogo4J.js — Do Alimento ao Prato
    Lógica do jogo + controles touch
-   Os controles aparecem SÓ em celular/tablet de verdade.
-   NUNCA aparecem no PC (nem em notebook com tela touch + mouse).
+   Controles aparecem SÓ em celular/tablet (nunca no PC).
    Fase 1: exige pegar sementes e água antes de plantar/regar
-   Fase 2: corrigida (permite pegar as duas caixas)
+   Fase 2: permite pegar as duas caixas
+   Colheita: a planta desaparece depois de colhida
    ============================================================ */
 
 const canvas = document.getElementById("canvas");
@@ -24,10 +24,15 @@ let joyOrigin = { x: 0, y: 0 };
 let joyKnob = null;
 let joyBase = null;
 
-/* Detecta se é um aparelho REALMENTE mobile (celular/tablet).
-   Regra estrita: precisa ter TOQUE + SEM mouse (hover: none) + ponteiro grosso.
-   - Celular / tablet -> true
-   - PC / notebook (mesmo com tela touch e mouse) -> false */
+/* Navegador mobile? (Windows/Mac/Linux desktop -> false) */
+function isMobileUserAgent() {
+    const ua = navigator.userAgent || "";
+    const uaMobile = /Android|iPhone|iPod|iPad|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile|Mobile|Tablet/i.test(ua);
+    const isIPad = (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    return uaMobile || isIPad;
+}
+
+/* Só é mobile de verdade se: tem toque + sem mouse + ponteiro grosso + UA mobile */
 function isTouchMobile() {
     const mq = window.matchMedia ? window.matchMedia.bind(window) : null;
     if (!mq) return false;
@@ -35,10 +40,10 @@ function isTouchMobile() {
     const temToque = ("ontouchstart" in window) ||
         (navigator.maxTouchPoints > 0) ||
         (navigator.msMaxTouchPoints > 0);
-    const semMouse = mq("(hover: none)").matches;           // não tem mouse pairando
-    const ponteiroGrosso = mq("(pointer: coarse)").matches; // dedo, não cursor fino
+    const semMouse = mq("(hover: none)").matches;
+    const ponteiroGrosso = mq("(pointer: coarse)").matches;
 
-    return temToque && semMouse && ponteiroGrosso;
+    return temToque && semMouse && ponteiroGrosso && isMobileUserAgent();
 }
 
 function pointerXY(e) {
@@ -159,22 +164,49 @@ function updateJoy(clientX, clientY) {
     keys["d"] = keys["arrowright"] = joyDir.x > 0.3;
 }
 
-function initMobileControls() {
+/* Cria os controles se for celular/tablet.
+   Remove se NÃO for (inclusive ao voltar do celular para o PC). */
+function syncMobileControls() {
+    const existente = document.getElementById("mobileControls");
+
     if (isTouchMobile()) {
-        createMobileControls();
-    } else {
-        // Garante que NÃO existam controles no PC
-        const existente = document.getElementById("mobileControls");
-        if (existente) existente.remove();
+        if (!existente) createMobileControls();
+        return;
     }
+
+    if (existente) existente.remove();
+
+    joyActive = false;
+    joyPointerId = null;
+    joyBase = null;
+    joyKnob = null;
+    joyDir.x = 0;
+    joyDir.y = 0;
+    keys["w"] = keys["s"] = keys["a"] = keys["d"] = false;
+    keys["arrowup"] = keys["arrowdown"] = keys["arrowleft"] = keys["arrowright"] = false;
 }
 
-document.addEventListener("DOMContentLoaded", initMobileControls);
-window.addEventListener("load", initMobileControls);
-window.addEventListener("orientationchange", () => setTimeout(initMobileControls, 250));
-window.addEventListener("resize", () => setTimeout(initMobileControls, 150));
-setTimeout(initMobileControls, 400);
-setTimeout(initMobileControls, 1200);
+function initMobileControls() {
+    syncMobileControls();
+}
+
+document.addEventListener("DOMContentLoaded", syncMobileControls);
+window.addEventListener("load", syncMobileControls);
+window.addEventListener("resize", () => setTimeout(syncMobileControls, 120));
+window.addEventListener("orientationchange", () => setTimeout(syncMobileControls, 250));
+
+["(hover: none)", "(hover: hover)", "(pointer: coarse)", "(pointer: fine)", "(any-pointer: coarse)"]
+    .forEach(q => {
+        if (!window.matchMedia) return;
+        const mql = window.matchMedia(q);
+        if (mql.addEventListener) mql.addEventListener("change", syncMobileControls);
+        else if (mql.addListener) mql.addListener(syncMobileControls);
+    });
+
+setInterval(syncMobileControls, 700);
+
+setTimeout(syncMobileControls, 400);
+setTimeout(syncMobileControls, 1200);
 
 /* ============================================================
    TECLADO (desktop)
@@ -805,11 +837,23 @@ function drawObject(o) {
         ctx.fillRect(o.x, o.y, o.w, o.h);
         ctx.strokeStyle = "#4a3425";
         ctx.strokeRect(o.x, o.y, o.w, o.h);
-        if (o.state >= 2) {
+
+        /* Só desenha a planta enquanto ela existe (estados 2, 3 e 4).
+           Depois de colhida (estado 5) o emoji SOME. */
+        if (o.state >= 2 && o.state <= 4) {
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
-            ctx.fillText(o.state >= 5 ? "🍅" : o.state >= 4 ? "🍅" : "🌱", o.x + o.w / 2, o.y + o.h / 2 + 10);
+            ctx.fillText(o.state === 4 ? "🍅" : "🌱", o.x + o.w / 2, o.y + o.h / 2 + 10);
         }
+
+        /* Marca de terreno já colhido */
+        if (o.state === 5) {
+            ctx.font = "bold 13px Arial";
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.fillText("✔ colhido", o.x + o.w / 2, o.y + o.h / 2 + 5);
+        }
+
         ctx.font = "12px Arial";
         ctx.fillStyle = "#fff";
         ctx.textAlign = "center";
