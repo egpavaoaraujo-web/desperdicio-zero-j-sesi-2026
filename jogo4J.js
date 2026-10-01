@@ -1,8 +1,8 @@
 /* ============================================================
    jogo4J.js — Do Alimento ao Prato
-   Lógica do jogo + controles mobile
-   Aparecem em QUALQUER aparelho com toque
-   (celular, tablet e PC/notebook com tela touch)
+   Lógica do jogo + controles touch
+   Os controles aparecem SÓ em celular/tablet de verdade.
+   NUNCA aparecem no PC (nem em notebook com tela touch + mouse).
    Fase 1: exige pegar sementes e água antes de plantar/regar
    Fase 2: corrigida (permite pegar as duas caixas)
    ============================================================ */
@@ -15,7 +15,7 @@ let running = false, paused = false, phaseIndex = 0;
 let last = 0, messageTimer = 0;
 
 /* ============================================================
-   CONTROLES MOBILE
+   CONTROLES TOUCH
    ============================================================ */
 let joyActive = false;
 let joyPointerId = null;
@@ -24,15 +24,21 @@ let joyOrigin = { x: 0, y: 0 };
 let joyKnob = null;
 let joyBase = null;
 
-/* Detecta se o aparelho TEM TOQUE.
+/* Detecta se é um aparelho REALMENTE mobile (celular/tablet).
+   Regra estrita: precisa ter TOQUE + SEM mouse (hover: none) + ponteiro grosso.
    - Celular / tablet -> true
-   - PC / notebook com tela touch -> true
-   - PC comum (só mouse) -> false */
-function hasTouch() {
-    const touchEvent = ("ontouchstart" in window);
-    const touchPoints = (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
-    const coarseAny = window.matchMedia && window.matchMedia("(any-pointer: coarse)").matches;
-    return touchEvent || touchPoints || coarseAny;
+   - PC / notebook (mesmo com tela touch e mouse) -> false */
+function isTouchMobile() {
+    const mq = window.matchMedia ? window.matchMedia.bind(window) : null;
+    if (!mq) return false;
+
+    const temToque = ("ontouchstart" in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0);
+    const semMouse = mq("(hover: none)").matches;           // não tem mouse pairando
+    const ponteiroGrosso = mq("(pointer: coarse)").matches; // dedo, não cursor fino
+
+    return temToque && semMouse && ponteiroGrosso;
 }
 
 function pointerXY(e) {
@@ -45,7 +51,7 @@ function pointerXY(e) {
 function createMobileControls() {
     if (document.getElementById("mobileControls")) return;
     if (!document.body) return;
-    if (!hasTouch()) return;
+    if (!isTouchMobile()) return;
 
     const el = document.createElement("div");
     el.id = "mobileControls";
@@ -154,12 +160,19 @@ function updateJoy(clientX, clientY) {
 }
 
 function initMobileControls() {
-    createMobileControls();
+    if (isTouchMobile()) {
+        createMobileControls();
+    } else {
+        // Garante que NÃO existam controles no PC
+        const existente = document.getElementById("mobileControls");
+        if (existente) existente.remove();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", initMobileControls);
 window.addEventListener("load", initMobileControls);
 window.addEventListener("orientationchange", () => setTimeout(initMobileControls, 250));
+window.addEventListener("resize", () => setTimeout(initMobileControls, 150));
 setTimeout(initMobileControls, 400);
 setTimeout(initMobileControls, 1200);
 
