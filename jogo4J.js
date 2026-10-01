@@ -6,6 +6,92 @@ const keys = {};
 let running = false, paused = false, phaseIndex = 0;
 let last = 0, messageTimer = 0;
 
+// ========== HUD: impede que o prompt e as mensagens cubram os requisitos ==========
+function setupHudStyles() {
+    if (document.getElementById("hudFixStyle")) return;
+
+    const style = document.createElement("style");
+    style.id = "hudFixStyle";
+    style.textContent = `
+        #stats,
+        #objectives,
+        #interaction,
+        #message {
+            z-index: 6;
+        }
+
+        /* Lista de requisitos: fica no topo, com fundo próprio */
+        #objectives {
+            background: rgba(0, 0, 0, 0.60);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            max-width: 48%;
+            line-height: 1.5;
+            font-size: 13px;
+            pointer-events: none;
+        }
+        #objectives .done {
+            color: #7dff8a;
+        }
+
+        /* Prompt de interação: sempre embaixo, nunca sobre os requisitos */
+        #interaction {
+            position: absolute !important;
+            left: 50% !important;
+            right: auto !important;
+            top: auto !important;
+            bottom: 16px !important;
+            transform: translateX(-50%) !important;
+            background: rgba(0, 0, 0, 0.72);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 999px;
+            white-space: nowrap;
+            font-size: 13px;
+            pointer-events: auto;
+        }
+
+        /* Mensagens: acima do prompt, também centralizadas embaixo */
+        #message {
+            position: absolute !important;
+            left: 50% !important;
+            right: auto !important;
+            top: auto !important;
+            bottom: 66px !important;
+            transform: translateX(-50%) !important;
+            max-width: 90%;
+            text-align: center;
+            z-index: 7 !important;
+        }
+
+        @media (max-width: 700px) {
+            #objectives {
+                max-width: 60%;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            #interaction {
+                bottom: 8px !important;
+                font-size: 12px;
+            }
+            #message {
+                bottom: 48px !important;
+                font-size: 13px;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupHudStyles);
+} else {
+    setupHudStyles();
+}
+
 // ========== CONTROLES MOBILE ==========
 const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 let touchControls = null;
@@ -19,7 +105,6 @@ function createMobileControls() {
     if (!isTouchDevice) return;
     if (document.getElementById("mobileControls")) return;
 
-    // Container dos controles
     touchControls = document.createElement("div");
     touchControls.id = "mobileControls";
     touchControls.innerHTML = `
@@ -33,7 +118,6 @@ function createMobileControls() {
     `;
     document.getElementById("game").appendChild(touchControls);
 
-    // Estilos dos controles (injetados)
     const style = document.createElement("style");
     style.textContent = `
         #game {
@@ -127,13 +211,11 @@ function createMobileControls() {
     joyBase = document.getElementById("joyBase");
     joyKnob = document.getElementById("joyKnob");
 
-    // Joystick
     joyBase.addEventListener("touchstart", onJoyStart, { passive: false });
     joyBase.addEventListener("touchmove", onJoyMove, { passive: false });
     joyBase.addEventListener("touchend", onJoyEnd, { passive: false });
     joyBase.addEventListener("touchcancel", onJoyEnd, { passive: false });
 
-    // Botão interagir (touchstart + click para máxima compatibilidade)
     const btnInteract = document.getElementById("btnInteract");
     btnInteract.addEventListener("touchstart", (e) => {
         e.preventDefault();
@@ -145,7 +227,6 @@ function createMobileControls() {
         interact();
     });
 
-    // Botão pause
     const btnPause = document.getElementById("btnPause");
     btnPause.addEventListener("touchstart", (e) => {
         e.preventDefault();
@@ -157,7 +238,6 @@ function createMobileControls() {
         if (running) togglePause();
     });
 
-    // Evita zoom / scroll / menu de contexto
     document.getElementById("game").addEventListener("touchmove", (e) => {
         e.preventDefault();
     }, { passive: false });
@@ -190,7 +270,6 @@ function onJoyEnd(e) {
     joyDir.x = 0;
     joyDir.y = 0;
     if (joyKnob) joyKnob.style.transform = "translate(0,0)";
-    // limpa teclas virtuais
     keys["w"] = keys["s"] = keys["a"] = keys["d"] = false;
     keys["arrowup"] = keys["arrowdown"] = keys["arrowleft"] = keys["arrowright"] = false;
 }
@@ -206,19 +285,16 @@ function updateJoy(clientX, clientY) {
     }
     joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
 
-    // normaliza direção
     const dead = 10;
     joyDir.x = Math.abs(dx) < dead ? 0 : dx / max;
     joyDir.y = Math.abs(dy) < dead ? 0 : dy / max;
 
-    // mapeia para teclas (para reaproveitar o move())
     keys["w"] = keys["arrowup"] = joyDir.y < -0.3;
     keys["s"] = keys["arrowdown"] = joyDir.y > 0.3;
     keys["a"] = keys["arrowleft"] = joyDir.x < -0.3;
     keys["d"] = keys["arrowright"] = joyDir.x > 0.3;
 }
 
-// Inicializa controles mobile assim que o DOM estiver pronto
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", createMobileControls);
 } else {
@@ -234,22 +310,22 @@ document.addEventListener("keydown", e => {
 });
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
-// Também permite clicar/tocar no prompt [E] da HUD
 document.addEventListener("click", (e) => {
     if (e.target.closest(".interact")) interact();
 });
 
-// ========== RESTANTE DO JOGO ==========
+// ========== JOGO ==========
 const player = { x: 120, y: 300, w: 26, h: 34, speed: 175, carrying: null };
 let state = {
     water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0,
-    money: 50, waste: 0, meals: 0, bought: 0, stored: 0, boxT: 0, boxC: 0
+    money: 50, waste: 0, meals: 0, bought: 0, stored: 0,
+    boxT: 0, boxC: 0, seedsPicked: false, waterPicked: false
 };
 const phases = [
     {
         name: "FAZENDA", role: "👨‍🌾 Fazendeiro",
-        bg: "#8bcf73", intro: "Você é o fazendeiro. Prepare a terra, plante, regue e colha.",
-        objectives: ["Preparar 3 terrenos", "Plantar 3 sementes", "Regar 3 plantas", "Colher 3 alimentos", "Guardar a colheita"],
+        bg: "#8bcf73", intro: "Você é o fazendeiro. Pegue as sementes, prepare a terra, plante, regue e colha.",
+        objectives: ["Pegar sementes", "Pegar água", "Preparar 3 terrenos", "Plantar 3 sementes", "Regar 3 plantas", "Colher 3 alimentos", "Guardar a colheita"],
         setup() {
             objects = [
                 obj("shed", 760, 100, 100, 90, "📦", "Galpão"),
@@ -348,7 +424,11 @@ function obj(type, x, y, w, h, icon, label, sub = "", index = 0) {
     return { type, x, y, w, h, icon, label, sub, index, state: 0, used: false };
 }
 function resetState() {
-    state = { water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0, money: 50, waste: 0, meals: 0, bought: 0, stored: 0, boxT: 0, boxC: 0 };
+    state = {
+        water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0,
+        money: 50, waste: 0, meals: 0, bought: 0, stored: 0,
+        boxT: 0, boxC: 0, seedsPicked: false, waterPicked: false
+    };
     phaseIndex = 0;
 }
 function startGame() {
@@ -430,18 +510,38 @@ function interact() {
     else if (p === 6) kitchenInteract(o);
     updateHUD(); checkPhase();
 }
+
+// ========== FASE 1 (FAZENDA) — sementes e água obrigatórias ==========
 function farmInteract(o) {
     if (o.type === "seed") {
-        state.seeds = 5; showMessage("Você pegou 5 sementes.");
-    } else if (o.type === "soil") {
+        if (!state.seedsPicked) {
+            state.seedsPicked = true;
+            state.seeds = 5;
+            showMessage("Você pegou 5 sementes. Agora pode plantar!");
+        } else {
+            showMessage("Você já pegou as sementes.");
+        }
+        return;
+    }
+
+    if (o.type === "water") {
+        state.waterPicked = true;
+        state.water = Math.min(100, state.water + 40);
+        showMessage("Você pegou água no reservatório: +40.");
+        return;
+    }
+
+    if (o.type === "soil") {
         if (o.state === 0) {
             if (state.energy < 8) { showMessage("Você está sem energia."); return; }
             o.state = 1; state.energy -= 8; showMessage("Terra preparada!");
         } else if (o.state === 1) {
+            if (!state.seedsPicked) { showMessage("Pegue as sementes na caixa de sementes primeiro."); return; }
             if (state.seeds <= 0) { showMessage("Você não tem sementes."); return; }
             o.state = 2; state.seeds--; showMessage("Semente plantada!");
         } else if (o.state === 2) {
-            if (state.water < 10) { showMessage("Pegue água no reservatório."); return; }
+            if (!state.waterPicked) { showMessage("Pegue água no reservatório antes de regar."); return; }
+            if (state.water < 10) { showMessage("Você está sem água. Pegue mais no reservatório."); return; }
             o.state = 3; state.water -= 10; showMessage("Planta regada! Espere um pouco...");
             setTimeout(() => { if (o.state === 3) { o.state = 4; updateHUD(); showMessage("Uma planta cresceu! 🍅"); } }, 3500);
         } else if (o.state === 3) {
@@ -451,21 +551,21 @@ function farmInteract(o) {
         } else if (o.state === 5) {
             showMessage("Este terreno já foi colhido.");
         }
-    } else if (o.type === "water") {
-        state.water = Math.min(100, state.water + 40); showMessage("Reservatório abastecido: +40 água.");
-    } else if (o.type === "shed") {
-        if (state.tomatoes >= 3) { state.stored = 3; state.tomatoes -= 3; showMessage("Colheita armazenada! Fase concluída."); }
-        else showMessage("Você precisa colher 3 alimentos.");
+        return;
+    }
+
+    if (o.type === "shed") {
+        if (state.tomatoes >= 3) {
+            state.stored = 3; state.tomatoes -= 3;
+            showMessage("Colheita armazenada! Fase concluída.");
+        } else {
+            showMessage("Você precisa colher 3 alimentos.");
+        }
     }
 }
 
-// ========== FASE 2 (ARMAZENAMENTO) CORRIGIDA ==========
-// Antes: o estoque era marcado como "used" na 1ª caixa e travava a 2ª.
-// Agora: o estoque libera 1 caixa de tomate e depois 1 caixa de cenoura.
+// ========== FASE 2 (ARMAZENAMENTO) ==========
 function storageInteract(o) {
-    const tomatoSpot = objects.find(x => x.type === "tomatoSpot");
-    const carrotSpot = objects.find(x => x.type === "carrotSpot");
-
     if (o.type === "stock") {
         if (player.carrying) {
             showMessage("Você já está carregando uma caixa. Entregue antes de pegar outra.");
@@ -559,7 +659,9 @@ function kitchenInteract(o) {
 }
 function objectivesDone() {
     const p = phaseIndex;
-    if (p === 0) return objects.filter(o => o.type === "soil" && o.state >= 1).length >= 3 &&
+    if (p === 0) return state.seedsPicked &&
+        state.waterPicked &&
+        objects.filter(o => o.type === "soil" && o.state >= 1).length >= 3 &&
         objects.filter(o => o.type === "soil" && o.state >= 2).length >= 3 &&
         objects.filter(o => o.type === "soil" && o.state >= 3).length >= 3 &&
         objects.filter(o => o.type === "soil" && o.state >= 5).length >= 3 &&
@@ -585,6 +687,8 @@ function updateHUD() {
     let list = [];
     if (p === 0) {
         list = [
+            ["Pegar sementes", state.seedsPicked],
+            ["Pegar água", state.waterPicked],
             ["Preparar 3 terrenos", objects.filter(o => o.type === "soil" && o.state >= 1).length >= 3],
             ["Plantar 3 sementes", objects.filter(o => o.type === "soil" && o.state >= 2).length >= 3],
             ["Regar 3 plantas", objects.filter(o => o.type === "soil" && o.state >= 3).length >= 3],
@@ -706,9 +810,16 @@ function loop(t) {
 }
 function actionText(o) {
     if (phaseIndex === 0) {
-        if (o.type === "soil") return o.state === 0 ? "PREPARAR TERRA" : o.state === 1 ? "PLANTAR" : o.state === 2 ? "REGAR" : o.state === 3 ? "AGUARDAR CRESCIMENTO" : o.state === 4 ? "COLHER" : "COLHIDO";
-        if (o.type === "seed") return "Pegar sementes";
-        if (o.type === "water") return "Pegar água";
+        if (o.type === "seed") return state.seedsPicked ? "Sementes já pegas" : "PEGAR SEMENTES";
+        if (o.type === "water") return "PEGAR ÁGUA";
+        if (o.type === "soil") {
+            if (o.state === 0) return "PREPARAR TERRA";
+            if (o.state === 1) return state.seedsPicked ? "PLANTAR" : "PRECISA DE SEMENTES";
+            if (o.state === 2) return state.waterPicked ? "REGAR" : "PRECISA DE ÁGUA";
+            if (o.state === 3) return "AGUARDAR CRESCIMENTO";
+            if (o.state === 4) return "COLHER";
+            return "COLHIDO";
+        }
         if (o.type === "shed") return "Armazenar colheita";
     }
     if (phaseIndex === 1) {
