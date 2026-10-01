@@ -1,6 +1,6 @@
 /* ============================================================
    jogo4C.css — Do Alimento ao Prato
-   HUD, prompt, mensagens, telas, controles mobile e responsivo
+   HUD, prompt, mensagens, telas, controles touch e responsivo
    ============================================================ */
 
 /* ---------- Reset ---------- */
@@ -169,12 +169,14 @@ body {
 }
 
 /* ============================================================
-   CONTROLES MOBILE (joystick + botões)
+   CONTROLES TOUCH (joystick + botões)
+   Aparecem em qualquer aparelho com toque.
+   O JS só cria estes elementos se houver toque.
    ============================================================ */
 #mobileControls {
     position: fixed;
     inset: 0;
-    z-index: 100; /* acima de tudo, inclusive das telas */
+    z-index: 100;
     pointer-events: none;
     -webkit-user-select: none;
     user-select: none;

@@ -1,6 +1,8 @@
 /* ============================================================
    jogo4J.js — Do Alimento ao Prato
-   Lógica do jogo + controles mobile FIXOS na tela
+   Lógica do jogo + controles mobile
+   Aparecem em QUALQUER aparelho com toque
+   (celular, tablet e PC/notebook com tela touch)
    Fase 1: exige pegar sementes e água antes de plantar/regar
    Fase 2: corrigida (permite pegar as duas caixas)
    ============================================================ */
@@ -13,7 +15,7 @@ let running = false, paused = false, phaseIndex = 0;
 let last = 0, messageTimer = 0;
 
 /* ============================================================
-   CONTROLES MOBILE (fixos na tela, funcionam em qualquer celular)
+   CONTROLES MOBILE
    ============================================================ */
 let joyActive = false;
 let joyPointerId = null;
@@ -22,12 +24,15 @@ let joyOrigin = { x: 0, y: 0 };
 let joyKnob = null;
 let joyBase = null;
 
-function isTouchOrSmall() {
-    const touch = ("ontouchstart" in window) ||
-        (navigator.maxTouchPoints > 0) ||
-        (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
-    const small = Math.min(window.innerWidth, window.innerHeight) <= 820;
-    return touch || small;
+/* Detecta se o aparelho TEM TOQUE.
+   - Celular / tablet -> true
+   - PC / notebook com tela touch -> true
+   - PC comum (só mouse) -> false */
+function hasTouch() {
+    const touchEvent = ("ontouchstart" in window);
+    const touchPoints = (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+    const coarseAny = window.matchMedia && window.matchMedia("(any-pointer: coarse)").matches;
+    return touchEvent || touchPoints || coarseAny;
 }
 
 function pointerXY(e) {
@@ -39,7 +44,8 @@ function pointerXY(e) {
 
 function createMobileControls() {
     if (document.getElementById("mobileControls")) return;
-    if (!isTouchOrSmall()) return;
+    if (!document.body) return;
+    if (!hasTouch()) return;
 
     const el = document.createElement("div");
     el.id = "mobileControls";
@@ -51,91 +57,6 @@ function createMobileControls() {
         <button id="btnPause" type="button">❚❚</button>
     `;
     document.body.appendChild(el);
-
-    const style = document.createElement("style");
-    style.textContent = `
-        #mobileControls {
-            position: fixed;
-            inset: 0;
-            z-index: 15;
-            pointer-events: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        #joystickZone {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 230px;
-            height: 230px;
-            pointer-events: auto;
-            touch-action: none;
-        }
-        #joyBase {
-            position: absolute;
-            left: 26px;
-            bottom: 26px;
-            width: 124px;
-            height: 124px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.20);
-            border: 3px solid rgba(255, 255, 255, 0.45);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-            touch-action: none;
-        }
-        #joyKnob {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 56px;
-            height: 56px;
-            margin: -28px 0 0 -28px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.85);
-            border: 3px solid rgba(0, 0, 0, 0.18);
-            pointer-events: none;
-        }
-        #btnInteract, #btnPause {
-            position: absolute;
-            pointer-events: auto;
-            border: 0;
-            border-radius: 50%;
-            font-weight: 900;
-            color: #0b2510;
-            background: #65c466;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #btnInteract {
-            right: 26px;
-            bottom: 40px;
-            width: 90px;
-            height: 90px;
-            font-size: 26px;
-        }
-        #btnPause {
-            right: 30px;
-            top: 96px;
-            width: 54px;
-            height: 54px;
-            font-size: 18px;
-            background: #334155;
-            color: #fff;
-        }
-        #btnInteract:active, #btnPause:active {
-            transform: scale(0.93);
-            filter: brightness(0.95);
-        }
-        @media (max-height: 520px) and (orientation: landscape) {
-            #joystickZone { width: 190px; height: 170px; }
-            #joyBase { left: 18px; bottom: 16px; width: 104px; height: 104px; }
-            #joyKnob { width: 48px; height: 48px; margin: -24px 0 0 -24px; }
-            #btnInteract { right: 18px; bottom: 20px; width: 74px; height: 74px; font-size: 22px; }
-            #btnPause { right: 22px; top: 70px; width: 46px; height: 46px; font-size: 15px; }
-        }
-    `;
-    document.head.appendChild(style);
 
     joyBase = document.getElementById("joyBase");
     joyKnob = document.getElementById("joyKnob");
@@ -232,13 +153,15 @@ function updateJoy(clientX, clientY) {
     keys["d"] = keys["arrowright"] = joyDir.x > 0.3;
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", createMobileControls);
-} else {
+function initMobileControls() {
     createMobileControls();
 }
 
-window.addEventListener("orientationchange", () => setTimeout(createMobileControls, 250));
+document.addEventListener("DOMContentLoaded", initMobileControls);
+window.addEventListener("load", initMobileControls);
+window.addEventListener("orientationchange", () => setTimeout(initMobileControls, 250));
+setTimeout(initMobileControls, 400);
+setTimeout(initMobileControls, 1200);
 
 /* ============================================================
    TECLADO (desktop)
@@ -571,7 +494,7 @@ function farmInteract(o) {
 }
 
 /* ============================================================
-   FASE 2 — ARMAZENAMENTO (corrigida)
+   FASE 2 — ARMAZENAMENTO
    ============================================================ */
 function storageInteract(o) {
     if (o.type === "stock") {
