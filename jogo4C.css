@@ -21,6 +21,7 @@ body {
     -webkit-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 body {
@@ -29,21 +30,22 @@ body {
     justify-content: center;
 }
 
-/* ---------- Área do jogo ---------- */
+/* ---------- Área do jogo (mantém 960x600) ---------- */
 #game {
     position: relative;
-    width: min(100vw, 960px);
-    max-height: 100vh;
-    margin: 0 auto;
+    width: min(100vw, 960px, calc(100vh * 1.6));
+    height: min(100vh, calc(100vw / 1.6), 600px);
+    margin: auto;
     overflow: hidden;
     background: #000;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+    touch-action: none;
 }
 
 #canvas {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
     background: #111;
 }
 
@@ -179,7 +181,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 16px;
     background: rgba(6, 12, 26, 0.92);
     z-index: 20;
 }
@@ -323,12 +325,12 @@ body {
     #interaction {
         font-size: 12px;
         padding: 7px 14px;
-        bottom: 104px;
+        bottom: 8px;
     }
 
     #message {
         font-size: 12px;
-        bottom: 148px;
+        bottom: 46px;
     }
 
     .panel {
@@ -347,20 +349,20 @@ body {
     }
 }
 
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-height: 520px) and (orientation: landscape) {
     .mission {
         top: 42px;
         max-width: 46%;
     }
 
     #interaction {
-        bottom: 8px;
+        bottom: 6px;
         font-size: 11px;
         padding: 6px 12px;
     }
 
     #message {
-        bottom: 44px;
+        bottom: 40px;
         font-size: 11px;
     }
 

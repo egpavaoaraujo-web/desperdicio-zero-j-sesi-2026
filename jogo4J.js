@@ -1,3 +1,10 @@
+/* ============================================================
+   jogo4J.js — Do Alimento ao Prato
+   Lógica do jogo + controles mobile FIXOS na tela
+   Fase 1: exige pegar sementes e água antes de plantar/regar
+   Fase 2: corrigida (permite pegar as duas caixas)
+   ============================================================ */
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
@@ -6,45 +13,52 @@ let running = false, paused = false, phaseIndex = 0;
 let last = 0, messageTimer = 0;
 
 /* ============================================================
-   CONTROLES MOBILE
+   CONTROLES MOBILE (fixos na tela, funcionam em qualquer celular)
    ============================================================ */
-const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-let touchControls = null;
 let joyActive = false;
+let joyPointerId = null;
 let joyDir = { x: 0, y: 0 };
 let joyOrigin = { x: 0, y: 0 };
 let joyKnob = null;
 let joyBase = null;
 
-function createMobileControls() {
-    if (!isTouchDevice) return;
-    if (document.getElementById("mobileControls")) return;
+function isTouchOrSmall() {
+    const touch = ("ontouchstart" in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+    const small = Math.min(window.innerWidth, window.innerHeight) <= 820;
+    return touch || small;
+}
 
-    touchControls = document.createElement("div");
-    touchControls.id = "mobileControls";
-    touchControls.innerHTML = `
+function pointerXY(e) {
+    if (e.changedTouches && e.changedTouches[0]) {
+        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+}
+
+function createMobileControls() {
+    if (document.getElementById("mobileControls")) return;
+    if (!isTouchOrSmall()) return;
+
+    const el = document.createElement("div");
+    el.id = "mobileControls";
+    el.innerHTML = `
         <div id="joystickZone">
-            <div id="joyBase">
-                <div id="joyKnob"></div>
-            </div>
+            <div id="joyBase"><div id="joyKnob"></div></div>
         </div>
         <button id="btnInteract" type="button">E</button>
         <button id="btnPause" type="button">❚❚</button>
     `;
-    document.getElementById("game").appendChild(touchControls);
+    document.body.appendChild(el);
 
     const style = document.createElement("style");
     style.textContent = `
-        #game {
-            touch-action: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
         #mobileControls {
-            position: absolute;
+            position: fixed;
             inset: 0;
+            z-index: 15;
             pointer-events: none;
-            z-index: 5;
             -webkit-user-select: none;
             user-select: none;
         }
@@ -52,33 +66,33 @@ function createMobileControls() {
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 200px;
-            height: 200px;
+            width: 230px;
+            height: 230px;
             pointer-events: auto;
             touch-action: none;
         }
         #joyBase {
             position: absolute;
-            left: 30px;
-            bottom: 30px;
-            width: 110px;
-            height: 110px;
+            left: 26px;
+            bottom: 26px;
+            width: 124px;
+            height: 124px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.18);
-            border: 2px solid rgba(255,255,255,0.35);
+            background: rgba(255, 255, 255, 0.20);
+            border: 3px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
             touch-action: none;
         }
         #joyKnob {
             position: absolute;
             left: 50%;
             top: 50%;
-            width: 48px;
-            height: 48px;
-            margin: -24px 0 0 -24px;
+            width: 56px;
+            height: 56px;
+            margin: -28px 0 0 -28px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.75);
-            border: 2px solid rgba(0,0,0,0.15);
-            transition: transform 0.05s linear;
+            background: rgba(255, 255, 255, 0.85);
+            border: 3px solid rgba(0, 0, 0, 0.18);
             pointer-events: none;
         }
         #btnInteract, #btnPause {
@@ -89,99 +103,107 @@ function createMobileControls() {
             font-weight: 900;
             color: #0b2510;
             background: #65c466;
-            box-shadow: 0 4px 14px #0006;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
         #btnInteract {
-            right: 22px;
-            bottom: 36px;
-            width: 76px;
-            height: 76px;
-            font-size: 22px;
+            right: 26px;
+            bottom: 40px;
+            width: 90px;
+            height: 90px;
+            font-size: 26px;
         }
         #btnPause {
-            right: 28px;
-            top: 80px;
-            width: 48px;
-            height: 48px;
-            font-size: 16px;
+            right: 30px;
+            top: 96px;
+            width: 54px;
+            height: 54px;
+            font-size: 18px;
             background: #334155;
             color: #fff;
         }
         #btnInteract:active, #btnPause:active {
-            transform: scale(0.94);
+            transform: scale(0.93);
             filter: brightness(0.95);
         }
-        @media (max-height: 500px) and (orientation: landscape) {
-            #joystickZone { width: 150px; height: 140px; }
-            #joyBase { left: 18px; bottom: 16px; width: 96px; height: 96px; }
-            #joyKnob { width: 40px; height: 40px; margin: -20px 0 0 -20px; }
-            #btnInteract { right: 16px; bottom: 18px; width: 62px; height: 62px; font-size: 18px; }
-            #btnPause { right: 18px; top: 60px; width: 42px; height: 42px; }
+        @media (max-height: 520px) and (orientation: landscape) {
+            #joystickZone { width: 190px; height: 170px; }
+            #joyBase { left: 18px; bottom: 16px; width: 104px; height: 104px; }
+            #joyKnob { width: 48px; height: 48px; margin: -24px 0 0 -24px; }
+            #btnInteract { right: 18px; bottom: 20px; width: 74px; height: 74px; font-size: 22px; }
+            #btnPause { right: 22px; top: 70px; width: 46px; height: 46px; font-size: 15px; }
         }
     `;
     document.head.appendChild(style);
 
     joyBase = document.getElementById("joyBase");
     joyKnob = document.getElementById("joyKnob");
-
-    joyBase.addEventListener("touchstart", onJoyStart, { passive: false });
-    joyBase.addEventListener("touchmove", onJoyMove, { passive: false });
-    joyBase.addEventListener("touchend", onJoyEnd, { passive: false });
-    joyBase.addEventListener("touchcancel", onJoyEnd, { passive: false });
-
     const btnInteract = document.getElementById("btnInteract");
-    btnInteract.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        interact();
-    }, { passive: false });
-    btnInteract.addEventListener("click", (e) => {
-        e.preventDefault();
-        interact();
-    });
-
     const btnPause = document.getElementById("btnPause");
-    btnPause.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (running) togglePause();
-    }, { passive: false });
-    btnPause.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (running) togglePause();
-    });
 
-    document.getElementById("game").addEventListener("touchmove", (e) => {
-        e.preventDefault();
+    if (window.PointerEvent) {
+        joyBase.addEventListener("pointerdown", onJoyStart, { passive: false });
+        window.addEventListener("pointermove", onJoyMove, { passive: false });
+        window.addEventListener("pointerup", onJoyEnd, { passive: false });
+        window.addEventListener("pointercancel", onJoyEnd, { passive: false });
+
+        btnInteract.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            interact();
+        }, { passive: false });
+
+        btnPause.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            if (running) togglePause();
+        }, { passive: false });
+    } else {
+        joyBase.addEventListener("touchstart", onJoyStart, { passive: false });
+        window.addEventListener("touchmove", onJoyMove, { passive: false });
+        window.addEventListener("touchend", onJoyEnd, { passive: false });
+        window.addEventListener("touchcancel", onJoyEnd, { passive: false });
+
+        btnInteract.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            interact();
+        }, { passive: false });
+
+        btnPause.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            if (running) togglePause();
+        }, { passive: false });
+    }
+
+    document.addEventListener("touchmove", (e) => {
+        if (e.target.closest && e.target.closest("#mobileControls, #game")) e.preventDefault();
     }, { passive: false });
 
-    document.getElementById("game").addEventListener("contextmenu", (e) => {
-        e.preventDefault();
-    });
+    document.addEventListener("gesturestart", (e) => e.preventDefault());
 }
 
 function onJoyStart(e) {
     e.preventDefault();
     joyActive = true;
-    const t = e.changedTouches[0];
+    joyPointerId = (e.pointerId !== undefined) ? e.pointerId : "touch";
+    const p = pointerXY(e);
     const rect = joyBase.getBoundingClientRect();
     joyOrigin.x = rect.left + rect.width / 2;
     joyOrigin.y = rect.top + rect.height / 2;
-    updateJoy(t.clientX, t.clientY);
+    updateJoy(p.x, p.y);
 }
 
 function onJoyMove(e) {
     if (!joyActive) return;
+    if (e.pointerId !== undefined && joyPointerId !== null && e.pointerId !== joyPointerId) return;
     e.preventDefault();
-    const t = e.changedTouches[0];
-    updateJoy(t.clientX, t.clientY);
+    const p = pointerXY(e);
+    updateJoy(p.x, p.y);
 }
 
 function onJoyEnd(e) {
-    e.preventDefault();
+    if (e.pointerId !== undefined && joyPointerId !== null && e.pointerId !== joyPointerId) return;
     joyActive = false;
+    joyPointerId = null;
     joyDir.x = 0;
     joyDir.y = 0;
     if (joyKnob) joyKnob.style.transform = "translate(0,0)";
@@ -192,13 +214,13 @@ function onJoyEnd(e) {
 function updateJoy(clientX, clientY) {
     let dx = clientX - joyOrigin.x;
     let dy = clientY - joyOrigin.y;
-    const max = 38;
+    const max = 42;
     const dist = Math.hypot(dx, dy);
     if (dist > max) {
         dx = (dx / dist) * max;
         dy = (dy / dist) * max;
     }
-    joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+    if (joyKnob) joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
 
     const dead = 10;
     joyDir.x = Math.abs(dx) < dead ? 0 : dx / max;
@@ -216,6 +238,8 @@ if (document.readyState === "loading") {
     createMobileControls();
 }
 
+window.addEventListener("orientationchange", () => setTimeout(createMobileControls, 250));
+
 /* ============================================================
    TECLADO (desktop)
    ============================================================ */
@@ -228,7 +252,7 @@ document.addEventListener("keydown", e => {
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
 document.addEventListener("click", (e) => {
-    if (e.target.closest(".interact")) interact();
+    if (e.target.closest && e.target.closest(".interact")) interact();
 });
 
 /* ============================================================
@@ -478,7 +502,6 @@ function interact() {
 
 /* ============================================================
    FASE 1 — FAZENDA
-   Exige pegar sementes antes de plantar e água antes de regar
    ============================================================ */
 function farmInteract(o) {
     if (o.type === "seed") {
