@@ -1,11 +1,205 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
-
 const keys = {};
 let running = false, paused = false, phaseIndex = 0;
 let last = 0, messageTimer = 0;
 
+// ========== CONTROLES MOBILE ==========
+const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+let touchControls = null;
+let joyActive = false;
+let joyDir = { x: 0, y: 0 };
+let joyOrigin = { x: 0, y: 0 };
+let joyKnob = null;
+let joyBase = null;
+
+function createMobileControls() {
+    if (!isTouchDevice) return;
+
+    // Container dos controles
+    touchControls = document.createElement("div");
+    touchControls.id = "mobileControls";
+    touchControls.innerHTML = `
+        <div id="joystickZone">
+            <div id="joyBase">
+                <div id="joyKnob"></div>
+            </div>
+        </div>
+        <button id="btnInteract" type="button">E</button>
+        <button id="btnPause" type="button">❚❚</button>
+    `;
+    document.getElementById("game").appendChild(touchControls);
+
+    // Estilos dos controles (injetados)
+    const style = document.createElement("style");
+    style.textContent = `
+        #mobileControls {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        #joystickZone {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 180px;
+            height: 180px;
+            pointer-events: auto;
+        }
+        #joyBase {
+            position: absolute;
+            left: 30px;
+            bottom: 30px;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            border: 2px solid rgba(255,255,255,0.35);
+            touch-action: none;
+        }
+        #joyKnob {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 48px;
+            height: 48px;
+            margin: -24px 0 0 -24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.75);
+            border: 2px solid rgba(0,0,0,0.15);
+            transition: transform 0.05s linear;
+            pointer-events: none;
+        }
+        #btnInteract, #btnPause {
+            position: absolute;
+            pointer-events: auto;
+            border: 0;
+            border-radius: 50%;
+            font-weight: 900;
+            color: #0b2510;
+            background: #65c466;
+            box-shadow: 0 4px 14px #0006;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #btnInteract {
+            right: 22px;
+            bottom: 36px;
+            width: 72px;
+            height: 72px;
+            font-size: 22px;
+        }
+        #btnPause {
+            right: 28px;
+            top: 80px;
+            width: 48px;
+            height: 48px;
+            font-size: 16px;
+            background: #334155;
+            color: #fff;
+        }
+        #btnInteract:active, #btnPause:active {
+            transform: scale(0.94);
+            filter: brightness(0.95);
+        }
+        @media (max-height: 500px) and (orientation: landscape) {
+            #joystickZone { width: 150px; height: 140px; }
+            #joyBase { left: 18px; bottom: 16px; width: 96px; height: 96px; }
+            #joyKnob { width: 40px; height: 40px; margin: -20px 0 0 -20px; }
+            #btnInteract { right: 16px; bottom: 18px; width: 60px; height: 60px; font-size: 18px; }
+            #btnPause { right: 18px; top: 60px; width: 42px; height: 42px; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    joyBase = document.getElementById("joyBase");
+    joyKnob = document.getElementById("joyKnob");
+
+    // Joystick
+    joyBase.addEventListener("touchstart", onJoyStart, { passive: false });
+    joyBase.addEventListener("touchmove", onJoyMove, { passive: false });
+    joyBase.addEventListener("touchend", onJoyEnd, { passive: false });
+    joyBase.addEventListener("touchcancel", onJoyEnd, { passive: false });
+
+    // Botão interagir
+    document.getElementById("btnInteract").addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        interact();
+    }, { passive: false });
+
+    // Botão pause
+    document.getElementById("btnPause").addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        if (running) togglePause();
+    }, { passive: false });
+
+    // Evita zoom / scroll
+    document.getElementById("game").addEventListener("touchmove", (e) => {
+        if (e.target.closest("#joystickZone, #btnInteract, #btnPause")) e.preventDefault();
+    }, { passive: false });
+}
+
+function onJoyStart(e) {
+    e.preventDefault();
+    joyActive = true;
+    const t = e.changedTouches[0];
+    const rect = joyBase.getBoundingClientRect();
+    joyOrigin.x = rect.left + rect.width / 2;
+    joyOrigin.y = rect.top + rect.height / 2;
+    updateJoy(t.clientX, t.clientY);
+}
+
+function onJoyMove(e) {
+    if (!joyActive) return;
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    updateJoy(t.clientX, t.clientY);
+}
+
+function onJoyEnd(e) {
+    e.preventDefault();
+    joyActive = false;
+    joyDir.x = 0;
+    joyDir.y = 0;
+    joyKnob.style.transform = "translate(0,0)";
+    // limpa teclas virtuais
+    keys["w"] = keys["s"] = keys["a"] = keys["d"] = false;
+    keys["arrowup"] = keys["arrowdown"] = keys["arrowleft"] = keys["arrowright"] = false;
+}
+
+function updateJoy(clientX, clientY) {
+    let dx = clientX - joyOrigin.x;
+    let dy = clientY - joyOrigin.y;
+    const max = 38;
+    const dist = Math.hypot(dx, dy);
+    if (dist > max) {
+        dx = (dx / dist) * max;
+        dy = (dy / dist) * max;
+    }
+    joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+
+    // normaliza direção
+    const dead = 10;
+    joyDir.x = Math.abs(dx) < dead ? 0 : dx / max;
+    joyDir.y = Math.abs(dy) < dead ? 0 : dy / max;
+
+    // mapeia para teclas (para reaproveitar o move())
+    keys["w"] = keys["arrowup"] = joyDir.y < -0.3;
+    keys["s"] = keys["arrowdown"] = joyDir.y > 0.3;
+    keys["a"] = keys["arrowleft"] = joyDir.x < -0.3;
+    keys["d"] = keys["arrowright"] = joyDir.x > 0.3;
+}
+
+// Inicializa controles mobile assim que o DOM estiver pronto
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", createMobileControls);
+} else {
+    createMobileControls();
+}
+
+// ========== TECLADO (desktop) ==========
 document.addEventListener("keydown", e => {
     keys[e.key.toLowerCase()] = true;
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
@@ -14,13 +208,17 @@ document.addEventListener("keydown", e => {
 });
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
-const player = { x: 120, y: 300, w: 26, h: 34, speed: 175, carrying: null };
+// Também permite clicar/tocar no prompt [E] da HUD
+document.addEventListener("click", (e) => {
+    if (e.target.closest(".interact")) interact();
+});
 
+// ========== RESTANTE DO JOGO (igual + pequenos ajustes) ==========
+const player = { x: 120, y: 300, w: 26, h: 34, speed: 175, carrying: null };
 let state = {
     water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0,
     money: 50, waste: 0, meals: 0, bought: 0, stored: 0
 };
-
 const phases = [
     {
         name: "FAZENDA", role: "👨‍🌾 Fazendeiro",
@@ -119,18 +317,14 @@ const phases = [
         }
     }
 ];
-
 let objects = [];
-
 function obj(type, x, y, w, h, icon, label, sub = "", index = 0) {
     return { type, x, y, w, h, icon, label, sub, index, state: 0, used: false };
 }
-
 function resetState() {
     state = { water: 100, energy: 100, seeds: 5, tomatoes: 0, carrots: 0, boxes: 0, money: 50, waste: 0, meals: 0, bought: 0, stored: 0 };
     phaseIndex = 0;
 }
-
 function startGame() {
     resetState(); loadPhase(0);
     document.getElementById("startScreen").classList.add("hidden");
@@ -160,7 +354,6 @@ function finishGame() {
      <p><b>Etapas concluídas:</b> ${phases.length}/7</p>`;
     document.getElementById("finishScreen").classList.remove("hidden");
 }
-
 function rectsOverlap(a, b) {
     return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
@@ -196,14 +389,12 @@ function nearObject() {
     }
     return best;
 }
-
 let interactionLock = false;
 function interact() {
     if (!running || paused || interactionLock) return;
     const o = nearObject(); if (!o) return;
     interactionLock = true; setTimeout(() => interactionLock = false, 250);
     const p = phaseIndex;
-
     if (p === 0) farmInteract(o);
     else if (p === 1) storageInteract(o);
     else if (p === 2) transportInteract(o);
@@ -282,7 +473,6 @@ function kitchenInteract(o) {
     else if (o.type === "table" && player.carrying === "served") { player.carrying = null; o.used = true; state.meals++; showMessage("Refeição servida! Agora cuide da sobra."); }
     else if (o.type === "trash") { state.waste = Math.min(100, state.waste + 10); o.used = true; showMessage("Você desperdiçou comida. Tente aproveitar as sobras!"); }
 }
-
 function objectivesDone() {
     const p = phaseIndex;
     if (p === 0) return objects.filter(o => o.type === "soil" && o.state >= 1).length >= 3 &&
