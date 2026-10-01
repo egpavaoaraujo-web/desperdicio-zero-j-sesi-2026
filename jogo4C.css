@@ -1,6 +1,6 @@
 /* ============================================================
    jogo4C.css — Do Alimento ao Prato
-   HUD, prompt, mensagens, telas e responsividade (mobile)
+   HUD, prompt, mensagens, telas, controles mobile e responsivo
    ============================================================ */
 
 /* ---------- Reset ---------- */
@@ -59,7 +59,6 @@ body {
     z-index: 6;
 }
 
-/* ---------- Barra superior ---------- */
 .topbar {
     display: flex;
     align-items: center;
@@ -100,7 +99,6 @@ body {
     white-space: nowrap;
 }
 
-/* ---------- Caixa de objetivo ---------- */
 .mission {
     position: absolute;
     top: 54px;
@@ -132,7 +130,6 @@ body {
     color: #7dff8a;
 }
 
-/* ---------- Prompt de interação [E] ---------- */
 #interaction {
     position: absolute;
     left: 50%;
@@ -149,7 +146,6 @@ body {
     z-index: 7;
 }
 
-/* ---------- Mensagens ---------- */
 #message {
     position: absolute;
     left: 50%;
@@ -170,6 +166,92 @@ body {
 
 #message.show {
     opacity: 1;
+}
+
+/* ============================================================
+   CONTROLES MOBILE (joystick + botões)
+   ============================================================ */
+#mobileControls {
+    position: fixed;
+    inset: 0;
+    z-index: 100; /* acima de tudo, inclusive das telas */
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#joystickZone {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 230px;
+    height: 230px;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+#joyBase {
+    position: absolute;
+    left: 26px;
+    bottom: 26px;
+    width: 124px;
+    height: 124px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.20);
+    border: 3px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    touch-action: none;
+}
+
+#joyKnob {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 56px;
+    height: 56px;
+    margin: -28px 0 0 -28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    border: 3px solid rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+}
+
+#btnInteract,
+#btnPause {
+    position: absolute;
+    pointer-events: auto;
+    border: 0;
+    border-radius: 50%;
+    font-weight: 900;
+    color: #0b2510;
+    background: #65c466;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#btnInteract {
+    right: 26px;
+    bottom: 40px;
+    width: 90px;
+    height: 90px;
+    font-size: 26px;
+}
+
+#btnPause {
+    right: 30px;
+    top: 96px;
+    width: 54px;
+    height: 54px;
+    font-size: 18px;
+    background: #334155;
+    color: #fff;
+}
+
+#btnInteract:active,
+#btnPause:active {
+    transform: scale(0.93);
+    filter: brightness(0.95);
 }
 
 /* ============================================================
@@ -350,6 +432,40 @@ body {
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
+    #joystickZone {
+        width: 190px;
+        height: 170px;
+    }
+
+    #joyBase {
+        left: 18px;
+        bottom: 16px;
+        width: 104px;
+        height: 104px;
+    }
+
+    #joyKnob {
+        width: 48px;
+        height: 48px;
+        margin: -24px 0 0 -24px;
+    }
+
+    #btnInteract {
+        right: 18px;
+        bottom: 20px;
+        width: 74px;
+        height: 74px;
+        font-size: 22px;
+    }
+
+    #btnPause {
+        right: 22px;
+        top: 70px;
+        width: 46px;
+        height: 46px;
+        font-size: 15px;
+    }
+
     .mission {
         top: 42px;
         max-width: 46%;
